@@ -1,0 +1,763 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EMS Report">
+<meta name="theme-color" content="#1e3a5f">
+<title>EMS Pre-Hospital Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --blue-dark: #1e3a5f;
+  --blue: #2563eb;
+  --blue-mid: #1d4ed8;
+  --blue-light: #dbeafe;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --yellow: #d97706;
+  --yellow-light: #fef3c7;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --gray-50: #f8fafc;
+  --gray-100: #f1f5f9;
+  --gray-200: #e2e8f0;
+  --gray-300: #cbd5e1;
+  --gray-400: #94a3b8;
+  --gray-500: #64748b;
+  --gray-600: #475569;
+  --gray-700: #334155;
+  --gray-900: #0f172a;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; background: var(--gray-100); font-family: 'Sarabun', sans-serif; color: var(--gray-900); }
+
+/* Layout */
+#app { display: flex; flex-direction: column; height: 100%; }
+#topbar {
+  background: var(--blue-dark);
+  padding: calc(var(--safe-top) + 12px) 16px 12px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+  position: relative;
+}
+#topbar h1 { color: #fff; font-size: 17px; font-weight: 600; letter-spacing: 0.3px; }
+#topbar .subtitle { color: rgba(255,255,255,0.6); font-size: 11px; font-family: 'IBM Plex Mono', monospace; }
+.topbar-right { text-align: right; }
+
+/* Tab bar */
+#tabbar {
+  background: #fff;
+  border-bottom: 1px solid var(--gray-200);
+  display: flex;
+  flex-shrink: 0;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+#tabbar::-webkit-scrollbar { display: none; }
+.tab-btn {
+  flex: 0 0 auto;
+  padding: 10px 14px;
+  font-size: 12px;
+  font-family: 'Sarabun', sans-serif;
+  font-weight: 500;
+  color: var(--gray-500);
+  background: none;
+  border: none;
+  border-bottom: 2.5px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s, border-color 0.15s;
+}
+.tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* Scroll area */
+#content {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 16px 16px calc(var(--safe-bottom) + 80px);
+}
+
+/* Sections */
+.section { display: none; }
+.section.active { display: block; }
+
+/* Cards */
+.card {
+  background: #fff;
+  border-radius: var(--radius);
+  border: 1px solid var(--gray-200);
+  margin-bottom: 14px;
+  overflow: hidden;
+}
+.card-header {
+  background: var(--blue-dark);
+  color: #fff;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.card-header .icon { font-size: 15px; margin-right: 6px; }
+.card-body { padding: 14px; }
+
+/* Form elements */
+.field { margin-bottom: 14px; }
+.field:last-child { margin-bottom: 0; }
+label.lbl { display: block; font-size: 12px; font-weight: 600; color: var(--gray-600); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px; }
+input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea, select {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 16px;
+  font-family: 'Sarabun', sans-serif;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  background: var(--gray-50);
+  color: var(--gray-900);
+  outline: none;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.15s;
+}
+input:focus, textarea:focus, select:focus { border-color: var(--blue); background: #fff; }
+textarea { resize: none; line-height: 1.5; }
+
+/* Radio / Checkbox groups */
+.radio-group, .check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.radio-pill {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.radio-pill input { display: none; }
+.radio-pill label {
+  padding: 8px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--gray-300);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  color: var(--gray-600);
+}
+.radio-pill input:checked + label { border-color: var(--blue); background: var(--blue-light); color: var(--blue-mid); }
+.radio-pill.red input:checked + label { border-color: var(--red); background: var(--red-light); color: var(--red); }
+.radio-pill.yellow input:checked + label { border-color: var(--yellow); background: var(--yellow-light); color: var(--yellow); }
+.radio-pill.green input:checked + label { border-color: var(--green); background: var(--green-light); color: var(--green); }
+
+.check-item {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.check-item input[type="checkbox"] { display: none; }
+.check-item label {
+  padding: 7px 13px;
+  border-radius: 8px;
+  border: 1.5px solid var(--gray-200);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+  background: #fff;
+  color: var(--gray-700);
+}
+.check-item input:checked + label { border-color: var(--blue); background: var(--blue-light); color: var(--blue-mid); font-weight: 500; }
+
+/* GCS row */
+.gcs-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.gcs-cell { text-align: center; }
+.gcs-cell .lbl { text-align: center; }
+.gcs-cell input { text-align: center; font-size: 20px; font-weight: 600; color: var(--blue-mid); }
+
+/* Motor grid */
+.motor-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+.motor-cell {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid var(--gray-200);
+  border-right: 1px solid var(--gray-200);
+}
+.motor-cell:nth-child(2n) { border-right: none; }
+.motor-cell:nth-last-child(-n+2) { border-bottom: none; }
+.motor-cell .lbl { font-size: 10px; color: var(--gray-500); margin-bottom: 4px; }
+.motor-cell input { text-align: center; font-size: 18px; font-weight: 700; color: var(--blue-mid); border: none; background: transparent; width: 40px; padding: 4px; }
+.motor-cell input:focus { border: 1.5px solid var(--blue); border-radius: 6px; background: var(--blue-light); }
+
+/* Inline row */
+.row { display: flex; gap: 10px; align-items: flex-end; }
+.row .field { flex: 1; }
+
+/* Vital Signs Table */
+.vs-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.vs-table th {
+  background: var(--blue-dark);
+  color: #fff;
+  padding: 9px 6px;
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.3px;
+}
+.vs-table td {
+  border: 1px solid var(--gray-200);
+  padding: 1px;
+}
+.vs-table td input {
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: center;
+  font-size: 14px;
+  padding: 8px 4px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--gray-900);
+  outline: none;
+}
+.vs-table td input:focus { background: var(--blue-light); }
+.vs-table .del-btn {
+  background: none;
+  border: none;
+  color: var(--red);
+  font-size: 18px;
+  cursor: pointer;
+  padding: 8px;
+  width: 100%;
+}
+.vs-table tr:nth-child(even) td { background: var(--gray-50); }
+
+/* Treatment rows */
+.treatment-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  margin-bottom: 8px;
+  padding: 10px;
+  background: var(--gray-50);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--gray-200);
+}
+.treatment-row input[type="time"] {
+  width: 95px;
+  flex-shrink: 0;
+  font-size: 14px;
+  padding: 9px 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+.treatment-row input[type="text"] { flex: 1; font-size: 14px; }
+.treatment-row .del-btn { background: none; border: none; color: var(--red); font-size: 20px; cursor: pointer; padding: 4px 6px; flex-shrink: 0; }
+
+/* Add row button */
+.add-btn {
+  width: 100%;
+  padding: 11px;
+  background: none;
+  border: 1.5px dashed var(--gray-300);
+  border-radius: var(--radius-sm);
+  color: var(--blue);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.15s;
+}
+.add-btn:active { background: var(--blue-light); border-color: var(--blue); }
+
+/* Section header inside card */
+.sub-header {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--blue-mid);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  margin: 14px 0 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--gray-200);
+}
+.sub-header:first-child { margin-top: 0; }
+
+/* Bottom action bar */
+#action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0; right: 0;
+  background: #fff;
+  border-top: 1px solid var(--gray-200);
+  padding: 10px 16px calc(var(--safe-bottom) + 10px);
+  display: flex;
+  gap: 10px;
+  z-index: 100;
+}
+.btn-primary {
+  flex: 1;
+  padding: 13px;
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.btn-primary:active { background: var(--blue-mid); }
+.btn-secondary {
+  flex: 1;
+  padding: 13px;
+  background: var(--gray-100);
+  color: var(--gray-700);
+  border: 1.5px solid var(--gray-200);
+  border-radius: var(--radius-sm);
+  font-size: 15px;
+  font-weight: 600;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer;
+}
+
+/* Pupil row */
+.pupil-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pupil-cell { }
+.pupil-cell .inner { display: flex; gap: 6px; align-items: center; }
+.pupil-cell .inner input[type="number"] { width: 60px; text-align: center; }
+.pupil-cell .rtl-check { display: flex; align-items: center; gap: 5px; font-size: 13px; color: var(--gray-600); }
+.pupil-cell .rtl-check input[type="checkbox"] { width: 18px; height: 18px; }
+
+/* Toast */
+#toast {
+  position: fixed;
+  bottom: calc(var(--safe-bottom) + 90px);
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--gray-900);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.25s;
+  pointer-events: none;
+  z-index: 200;
+  white-space: nowrap;
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* Date badge */
+.date-badge {
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+  padding: 3px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="topbar">
+    <div>
+      <h1>EMS Pre-Hospital</h1>
+      <div class="subtitle">Patient Report v2.2</div>
+    </div>
+    <div class="topbar-right">
+      <div class="date-badge" id="date-badge"></div>
+    </div>
+  </div>
+
+  <div id="tabbar">
+    <button class="tab-btn active" onclick="switchTab(0, this)">📋 Triage</button>
+    <button class="tab-btn" onclick="switchTab(1, this)">🔍 Assessment</button>
+    <button class="tab-btn" onclick="switchTab(2, this)">📊 Vital Signs</button>
+    <button class="tab-btn" onclick="switchTab(3, this)">💊 Treatment</button>
+  </div>
+
+  <div id="content">
+
+    <!-- SECTION 0: Triage / Incident -->
+    <div class="section active" id="sec0">
+
+      <div class="card">
+        <div class="card-header"><span><span class="icon">📋</span>Incident Details</span></div>
+        <div class="card-body">
+
+          <div class="row">
+            <div class="field">
+              <label class="lbl">วันที่</label>
+              <input type="date" id="inc-date">
+            </div>
+            <div class="field">
+              <label class="lbl">At Scene เวลา</label>
+              <input type="time" id="inc-time">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="lbl">Code ศูนย์สั่งการ (IDC)</label>
+            <div class="radio-group">
+              <div class="radio-pill red"><input type="radio" name="idc" id="idc-r" value="แดง"><label for="idc-r">🔴 แดง</label></div>
+              <div class="radio-pill yellow"><input type="radio" name="idc" id="idc-y" value="เหลือง"><label for="idc-y">🟡 เหลือง</label></div>
+              <div class="radio-pill green"><input type="radio" name="idc" id="idc-g" value="เขียว"><label for="idc-g">🟢 เขียว</label></div>
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="lbl">Response Code (RC)</label>
+            <div class="radio-group">
+              <div class="radio-pill red"><input type="radio" name="rc" id="rc-r" value="แดง"><label for="rc-r">🔴 แดง</label></div>
+              <div class="radio-pill yellow"><input type="radio" name="rc" id="rc-y" value="เหลือง"><label for="rc-y">🟡 เหลือง</label></div>
+              <div class="radio-pill green"><input type="radio" name="rc" id="rc-g" value="เขียว"><label for="rc-g">🟢 เขียว</label></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span><span class="icon">👤</span>ข้อมูลผู้ป่วย</span></div>
+        <div class="card-body">
+
+          <div class="field">
+            <label class="lbl">เพศ</label>
+            <div class="radio-group">
+              <div class="radio-pill"><input type="radio" name="gender" id="g-m" value="ชาย"><label for="g-m">♂ ชาย</label></div>
+              <div class="radio-pill"><input type="radio" name="gender" id="g-f" value="หญิง"><label for="g-f">♀ หญิง</label></div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="field">
+              <label class="lbl">อายุ (ปี)</label>
+              <input type="number" id="age" placeholder="35" min="0" max="150">
+            </div>
+            <div class="field">
+              <label class="lbl">น้ำหนัก (กก.)</label>
+              <input type="number" id="weight" placeholder="65" min="0">
+            </div>
+          </div>
+
+          <div class="field">
+            <label class="lbl">MOI / NOI — กลไกการบาดเจ็บ / อาการ</label>
+            <textarea id="moi" rows="3" placeholder="เช่น ถูกรถชน / แน่นหน้าอกเฉียบพลัน / หมดสติไม่ทราบสาเหตุ"></textarea>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- /sec0 -->
+
+    <!-- SECTION 1: Assessment -->
+    <div class="section" id="sec1">
+
+      <div class="card">
+        <div class="card-header"><span>Assess Response (AVPU)</span></div>
+        <div class="card-body">
+          <div class="radio-group">
+            <div class="radio-pill"><input type="radio" name="avpu" id="av-a" value="Alert"><label for="av-a">A — Alert</label></div>
+            <div class="radio-pill"><input type="radio" name="avpu" id="av-v" value="Voice"><label for="av-v">V — Voice</label></div>
+            <div class="radio-pill"><input type="radio" name="avpu" id="av-p" value="Pain"><label for="av-p">P — Pain</label></div>
+            <div class="radio-pill"><input type="radio" name="avpu" id="av-u" value="Unresponsive"><label for="av-u">U — Unresponsive</label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span>🩸 X — Exsanguination</span></div>
+        <div class="card-body">
+          <div class="check-group">
+            <div class="check-item"><input type="checkbox" id="exs"><label for="exs">มีตกเลือดรุนแรง และได้รับการห้ามเลือดแล้ว</label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span>💨 A — Airway</span></div>
+        <div class="card-body">
+          <div class="check-group">
+            <div class="check-item"><input type="checkbox" id="aw-clear"><label for="aw-clear">Clear</label></div>
+            <div class="check-item"><input type="checkbox" id="aw-sec"><label for="aw-sec">Secretion</label></div>
+            <div class="check-item"><input type="checkbox" id="aw-stri"><label for="aw-stri">Stridor</label></div>
+            <div class="check-item"><input type="checkbox" id="aw-fb"><label for="aw-fb">Foreign body</label></div>
+          </div>
+          <div class="field" style="margin-top:10px">
+            <label class="lbl">อื่นๆ</label>
+            <input type="text" id="aw-other" placeholder="">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span>🫁 B — Breathing</span></div>
+        <div class="card-body">
+          <div class="sub-header">Breathing Sound</div>
+          <div class="check-group">
+            <div class="check-item"><input type="checkbox" id="bs-clear"><label for="bs-clear">Clear</label></div>
+            <div class="check-item"><input type="checkbox" id="bs-wheeze"><label for="bs-wheeze">Wheeze</label></div>
+            <div class="check-item"><input type="checkbox" id="bs-crep"><label for="bs-crep">Crepitation</label></div>
+            <div class="check-item"><input type="checkbox" id="bs-dec"><label for="bs-dec">Decreased (Rt/Lt)</label></div>
+            <div class="check-item"><input type="checkbox" id="bs-hunger"><label for="bs-hunger">Air Hunger</label></div>
+            <div class="check-item"><input type="checkbox" id="bs-apnea"><label for="bs-apnea">Apnea</label></div>
+          </div>
+          <div class="sub-header">Respiratory Distress / Signs</div>
+          <div class="check-group">
+            <div class="check-item"><input type="checkbox" id="rd-dysp"><label for="rd-dysp">Dyspnea</label></div>
+            <div class="check-item"><input type="checkbox" id="rd-tachy"><label for="rd-tachy">Tachypnea</label></div>
+            <div class="check-item"><input type="checkbox" id="rd-trachea"><label for="rd-trachea">Trachea shift</label></div>
+            <div class="check-item"><input type="checkbox" id="rd-poor"><label for="rd-poor">Poor Air</label></div>
+          </div>
+          <div class="field" style="margin-top:10px">
+            <label class="lbl">Etc.</label>
+            <input type="text" id="rd-other" placeholder="">
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span>❤️ C — Circulation</span></div>
+        <div class="card-body">
+          <div class="sub-header">Bleeding</div>
+          <div class="check-group">
+            <div class="check-item"><input type="checkbox" id="bl-ext"><label for="bl-ext">External</label></div>
+            <div class="check-item"><input type="checkbox" id="bl-int"><label for="bl-int">Internal</label></div>
+          </div>
+          <div class="sub-header">Capillary Refill</div>
+          <div class="radio-group">
+            <div class="radio-pill"><input type="radio" name="cap" id="cap-lt" value="<2s"><label for="cap-lt">&lt; 2s</label></div>
+            <div class="radio-pill"><input type="radio" name="cap" id="cap-gt" value=">2s"><label for="cap-gt">&gt; 2s</label></div>
+          </div>
+          <div class="sub-header">Tissue Color</div>
+          <div class="check-group">
+            <div class="check-item"><input type="checkbox" id="tc-nor"><label for="tc-nor">Normal</label></div>
+            <div class="check-item"><input type="checkbox" id="tc-pale"><label for="tc-pale">Pale</label></div>
+            <div class="check-item"><input type="checkbox" id="tc-cyan"><label for="tc-cyan">Cyanosis</label></div>
+          </div>
+          <div class="sub-header">Skin Temperature</div>
+          <div class="radio-group">
+            <div class="radio-pill"><input type="radio" name="temp" id="tmp-warm" value="Warm"><label for="tmp-warm">Warm</label></div>
+            <div class="radio-pill"><input type="radio" name="temp" id="tmp-cold" value="Cold"><label for="tmp-cold">Cold</label></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span>🧠 D — Disability (Neuro)</span></div>
+        <div class="card-body">
+          <div class="sub-header">GCS Score</div>
+          <div class="gcs-row">
+            <div class="gcs-cell">
+              <label class="lbl">Eye (E)</label>
+              <input type="number" id="gcs-e" min="1" max="4" placeholder="4">
+            </div>
+            <div class="gcs-cell">
+              <label class="lbl">Verbal (V)</label>
+              <input type="number" id="gcs-v" min="1" max="5" placeholder="5">
+            </div>
+            <div class="gcs-cell">
+              <label class="lbl">Motor (M)</label>
+              <input type="number" id="gcs-m" min="1" max="6" placeholder="6">
+            </div>
+          </div>
+          <div class="sub-header">Pupil Size & Reaction</div>
+          <div class="pupil-row">
+            <div class="pupil-cell">
+              <label class="lbl">P-Right</label>
+              <div class="inner">
+                <input type="number" step="0.5" min="0" max="9" placeholder="3" id="pup-rt"> mm
+              </div>
+              <div class="rtl-check" style="margin-top:6px">
+                <input type="checkbox" id="rtl-rt"> <label for="rtl-rt">RTL +</label>
+              </div>
+            </div>
+            <div class="pupil-cell">
+              <label class="lbl">P-Left</label>
+              <div class="inner">
+                <input type="number" step="0.5" min="0" max="9" placeholder="3" id="pup-lt"> mm
+              </div>
+              <div class="rtl-check" style="margin-top:6px">
+                <input type="checkbox" id="rtl-lt"> <label for="rtl-lt">RTL +</label>
+              </div>
+            </div>
+          </div>
+          <div class="sub-header">Motor Power Grade (0–5)</div>
+          <div class="motor-grid">
+            <div class="motor-cell">
+              <div class="lbl">Rt Upper</div>
+              <input type="text" id="mp-ru" maxlength="1" placeholder="5">
+            </div>
+            <div class="motor-cell">
+              <div class="lbl">Lt Upper</div>
+              <input type="text" id="mp-lu" maxlength="1" placeholder="5">
+            </div>
+            <div class="motor-cell">
+              <div class="lbl">Rt Lower</div>
+              <input type="text" id="mp-rl" maxlength="1" placeholder="5">
+            </div>
+            <div class="motor-cell">
+              <div class="lbl">Lt Lower</div>
+              <input type="text" id="mp-ll" maxlength="1" placeholder="5">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /sec1 -->
+
+    <!-- SECTION 2: Vital Signs -->
+    <div class="section" id="sec2">
+      <div class="card">
+        <div class="card-header">
+          <span>📊 Vital Signs</span>
+        </div>
+        <div style="overflow-x:auto">
+          <table class="vs-table">
+            <thead>
+              <tr>
+                <th>TIME</th>
+                <th>BP (mmHg)</th>
+                <th>HR</th>
+                <th>RR</th>
+                <th>SpO₂%</th>
+                <th>DTX</th>
+                <th style="width:36px"></th>
+              </tr>
+            </thead>
+            <tbody id="vs-body"></tbody>
+          </table>
+        </div>
+        <div style="padding:10px">
+          <button class="add-btn" onclick="addVS()">＋ เพิ่มแถว Vital Signs</button>
+        </div>
+      </div>
+    </div><!-- /sec2 -->
+
+    <!-- SECTION 3: Treatment -->
+    <div class="section" id="sec3">
+      <div class="card">
+        <div class="card-header"><span>💊 Management & Treatment</span></div>
+        <div class="card-body">
+          <div id="tx-body"></div>
+          <button class="add-btn" onclick="addTX()">＋ เพิ่มรายการ Treatment</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header"><span>✍️ ผู้บันทึก</span></div>
+        <div class="card-body">
+          <div class="field">
+            <label class="lbl">ชื่อ-นามสกุล ผู้บันทึก</label>
+            <input type="text" id="recorder" placeholder="เช่น นพ.สมชาย / พยาบาล สมหญิง">
+          </div>
+        </div>
+      </div>
+    </div><!-- /sec3 -->
+
+  </div><!-- /content -->
+
+  <div id="action-bar">
+    <button class="btn-secondary" onclick="window.print()">🖨️ พิมพ์</button>
+    <button class="btn-primary" onclick="saveData()">💾 บันทึกข้อมูล</button>
+  </div>
+
+</div><!-- /app -->
+
+<div id="toast"></div>
+
+<script>
+// Date badge
+const now = new Date();
+document.getElementById('date-badge').textContent = now.toLocaleDateString('th-TH', {day:'2-digit', month:'short', year:'2-digit'});
+document.getElementById('inc-date').value = now.toISOString().split('T')[0];
+
+// Tab switching
+function switchTab(idx, el) {
+  document.querySelectorAll('.section').forEach((s,i) => s.classList.toggle('active', i===idx));
+  document.querySelectorAll('.tab-btn').forEach((b,i) => b.classList.toggle('active', i===idx));
+  document.getElementById('content').scrollTo({top:0, behavior:'smooth'});
+}
+
+// Vital Signs
+function addVS() {
+  const tbody = document.getElementById('vs-body');
+  const tr = document.createElement('tr');
+  const id = Date.now();
+  tr.id = 'vs-' + id;
+  tr.innerHTML = `
+    <td><input type="time" placeholder="--:--"></td>
+    <td><input type="text" placeholder="120/80"></td>
+    <td><input type="number" placeholder="80" min="0" max="300"></td>
+    <td><input type="number" placeholder="20" min="0" max="60"></td>
+    <td><input type="number" placeholder="98" min="0" max="100"></td>
+    <td><input type="number" placeholder="100" min="0" max="600"></td>
+    <td><button class="del-btn" onclick="document.getElementById('vs-${id}').remove()">×</button></td>
+  `;
+  tbody.appendChild(tr);
+  tr.querySelector('input').focus();
+}
+
+// Treatment rows
+function addTX() {
+  const body = document.getElementById('tx-body');
+  const id = Date.now();
+  const div = document.createElement('div');
+  div.className = 'treatment-row';
+  div.id = 'tx-' + id;
+  div.innerHTML = `
+    <input type="time" placeholder="--:--">
+    <input type="text" placeholder="เช่น On IV Fluid NSS 1000ml / ใส่ท่อช่วยหายใจ / ให้ O₂ mask 10L/min">
+    <button class="del-btn" onclick="document.getElementById('tx-${id}').remove()">×</button>
+  `;
+  body.appendChild(div);
+  div.querySelectorAll('input')[1].focus();
+}
+
+// Init rows
+addVS(); addVS();
+addTX(); addTX(); addTX();
+
+// Toast
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Save
+function saveData() {
+  showToast('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
+}
+
+// Prevent zoom on double-tap iOS (keep as UX improvement)
+let lastTap = 0;
+document.addEventListener('touchend', function(e) {
+  const now2 = Date.now();
+  if (now2 - lastTap < 300) e.preventDefault();
+  lastTap = now2;
+}, {passive: false});
+</script>
+</body>
+</html>
