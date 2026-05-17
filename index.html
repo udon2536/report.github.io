@@ -1,376 +1,103 @@
-<!DOCTYPE html>
-<html lang="th">
+
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#0f172a">
-<title>EMS Tools — ระบบบันทึกข้อมูลการแพทย์ฉุกเฉิน</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<title>EMS Tools</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-* { box-sizing: border-box; margin: 0; padding: 0; }
-
-:root {
-  --navy: #0f172a;
-  --navy-mid: #1e293b;
-  --navy-light: #334155;
-  --slate: #475569;
-  --blue: #2563eb;
-  --blue-light: #3b82f6;
-  --blue-glow: rgba(37,99,235,0.3);
-  --orange: #f97316;
-  --orange-light: #fb923c;
-  --orange-glow: rgba(249,115,22,0.25);
-  --white: #f8fafc;
-  --muted: #94a3b8;
-  --border: rgba(255,255,255,0.08);
-}
-
-html, body {
-  min-height: 100%;
-  background: var(--navy);
-  color: var(--white);
-  font-family: 'Sarabun', sans-serif;
-  overflow-x: hidden;
-}
-
-/* Animated background */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background:
-    radial-gradient(ellipse 80% 60% at 20% 10%, rgba(37,99,235,0.12) 0%, transparent 60%),
-    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(249,115,22,0.08) 0%, transparent 60%);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Grid pattern overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-  background-size: 48px 48px;
-  pointer-events: none;
-  z-index: 0;
-}
-
-.container {
-  position: relative;
-  z-index: 1;
-  max-width: 640px;
-  margin: 0 auto;
-  padding: 48px 20px 60px;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Header */
-.header { text-align: center; margin-bottom: 56px; }
-
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  background: rgba(37,99,235,0.15);
-  border: 1px solid rgba(37,99,235,0.3);
-  color: var(--blue-light);
-  padding: 5px 14px;
-  border-radius: 20px;
-  font-size: 11px;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  margin-bottom: 20px;
-}
-
-.badge-dot {
-  width: 6px; height: 6px;
-  background: var(--blue-light);
-  border-radius: 50%;
-  animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.4; transform: scale(0.8); }
-}
-
-.header h1 {
-  font-size: clamp(28px, 6vw, 40px);
-  font-weight: 700;
-  letter-spacing: -0.5px;
-  line-height: 1.15;
-  margin-bottom: 12px;
-}
-
-.header h1 span {
-  background: linear-gradient(135deg, #60a5fa, #2563eb);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.header p {
-  color: var(--muted);
-  font-size: 15px;
-  font-weight: 400;
-  line-height: 1.6;
-  max-width: 380px;
-  margin: 0 auto;
-}
-
-/* Cards */
-.cards { width: 100%; display: flex; flex-direction: column; gap: 16px; }
-
-.card {
-  display: block;
-  text-decoration: none;
-  background: var(--navy-mid);
-  border: 1px solid var(--border);
-  border-radius: 20px;
-  padding: 28px;
-  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-  position: relative;
-  overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  border-radius: 20px;
-  opacity: 0;
-  transition: opacity 0.2s;
-}
-
-.card-blue::before {
-  background: radial-gradient(ellipse at 0% 0%, var(--blue-glow), transparent 70%);
-}
-.card-orange::before {
-  background: radial-gradient(ellipse at 0% 0%, var(--orange-glow), transparent 70%);
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(255,255,255,0.15);
-}
-.card:hover::before { opacity: 1; }
-.card-blue:hover { box-shadow: 0 8px 40px rgba(37,99,235,0.2); border-color: rgba(37,99,235,0.4); }
-.card-orange:hover { box-shadow: 0 8px 40px rgba(249,115,22,0.15); border-color: rgba(249,115,22,0.4); }
-
-.card:active { transform: translateY(-1px); }
-
-.card-inner { position: relative; z-index: 1; }
-
-.card-top {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 16px;
-}
-
-.card-icon {
-  width: 52px; height: 52px;
-  border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 24px;
-  flex-shrink: 0;
-}
-.icon-blue { background: rgba(37,99,235,0.2); }
-.icon-orange { background: rgba(249,115,22,0.15); }
-
-.card-tag {
-  font-size: 10px;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 0.8px;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-weight: 500;
-}
-.tag-blue { background: rgba(37,99,235,0.15); color: #93c5fd; border: 1px solid rgba(37,99,235,0.25); }
-.tag-orange { background: rgba(249,115,22,0.12); color: #fdba74; border: 1px solid rgba(249,115,22,0.25); }
-
-.card h2 {
-  font-size: 19px;
-  font-weight: 600;
-  color: var(--white);
-  margin-bottom: 6px;
-  letter-spacing: -0.2px;
-}
-
-.card p {
-  font-size: 14px;
-  color: var(--muted);
-  line-height: 1.6;
-  margin-bottom: 20px;
-}
-
-.card-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 20px;
-}
-
-.feature-pill {
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.05);
-  color: #cbd5e1;
-  border: 1px solid rgba(255,255,255,0.07);
-}
-
-.card-footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.card-version {
-  font-size: 11px;
-  font-family: 'IBM Plex Mono', monospace;
-  color: var(--slate);
-}
-
-.card-arrow {
-  width: 36px; height: 36px;
-  border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 16px;
-  transition: transform 0.2s;
-}
-.arrow-blue { background: rgba(37,99,235,0.2); color: #93c5fd; }
-.arrow-orange { background: rgba(249,115,22,0.15); color: #fdba74; }
-.card:hover .card-arrow { transform: translate(2px, -2px); }
-
-/* Divider */
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  color: var(--slate);
-  font-size: 11px;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 1px;
-  text-transform: uppercase;
-  padding: 4px 0;
-}
-.divider::before, .divider::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
-
-/* Footer */
-.footer {
-  margin-top: 48px;
-  text-align: center;
-  color: var(--slate);
-  font-size: 12px;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 0.5px;
-  line-height: 1.8;
-}
-
-/* Fade-in animation */
-.fade-up {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.5s ease forwards;
-}
-.delay-1 { animation-delay: 0.1s; }
-.delay-2 { animation-delay: 0.2s; }
-.delay-3 { animation-delay: 0.35s; }
-.delay-4 { animation-delay: 0.45s; }
-.delay-5 { animation-delay: 0.55s; }
-
-@keyframes fadeUp {
-  to { opacity: 1; transform: translateY(0); }
-}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--navy:#0f172a;--navy-mid:#1e293b;--blue:#2563eb;--orange:#f97316;--white:#f8fafc;--muted:#94a3b8;--border:rgba(255,255,255,0.08)}
+html,body{min-height:100%;background:var(--navy);color:var(--white);font-family:'Sarabun',sans-serif}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(37,99,235,.12),transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(249,115,22,.08),transparent 60%);pointer-events:none;z-index:0}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
+.wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:48px 20px 60px;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:#93c5fd;padding:5px 14px;border-radius:20px;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+.dot{width:6px;height:6px;background:#93c5fd;border-radius:50%;animation:p 2s infinite}
+@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
+h1{font-size:clamp(26px,6vw,38px);font-weight:700;letter-spacing:-.5px;line-height:1.15;margin-bottom:12px;text-align:center}
+h1 span{background:linear-gradient(135deg,#60a5fa,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.sub{color:var(--muted);font-size:15px;text-align:center;max-width:360px;margin:0 auto 48px;line-height:1.6}
+.cards{width:100%;display:flex;flex-direction:column;gap:14px}
+.card{display:block;text-decoration:none;background:var(--navy-mid);border:1px solid var(--border);border-radius:20px;padding:24px;transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;border-radius:20px;opacity:0;transition:opacity .2s}
+.cb::before{background:radial-gradient(ellipse at 0 0,rgba(37,99,235,.25),transparent 70%)}
+.co::before{background:radial-gradient(ellipse at 0 0,rgba(249,115,22,.2),transparent 70%)}
+.card:hover{transform:translateY(-3px)}
+.card:hover::before{opacity:1}
+.cb:hover{box-shadow:0 8px 40px rgba(37,99,235,.2);border-color:rgba(37,99,235,.4)}
+.co:hover{box-shadow:0 8px 40px rgba(249,115,22,.15);border-color:rgba(249,115,22,.4)}
+.card:active{transform:translateY(-1px)}
+.ci{position:relative;z-index:1}
+.ct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
+.ic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.ib{background:rgba(37,99,235,.2)}.io{background:rgba(249,115,22,.15)}
+.tag{font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:6px}
+.tb{background:rgba(37,99,235,.15);color:#93c5fd;border:1px solid rgba(37,99,235,.25)}
+.to{background:rgba(249,115,22,.12);color:#fdba74;border:1px solid rgba(249,115,22,.25)}
+.card h2{font-size:18px;font-weight:600;color:var(--white);margin-bottom:6px}
+.card p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px}
+.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
+.pill{font-size:12px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.05);color:#cbd5e1;border:1px solid rgba(255,255,255,.07)}
+.cf{display:flex;align-items:center;justify-content:space-between}
+.ver{font-size:11px;font-family:'IBM Plex Mono',monospace;color:#475569}
+.arr{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s}
+.ab{background:rgba(37,99,235,.2);color:#93c5fd}
+.ao{background:rgba(249,115,22,.15);color:#fdba74}
+.card:hover .arr{transform:translate(2px,-2px)}
+.div{display:flex;align-items:center;gap:12px;color:#475569;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:2px 0}
+.div::before,.div::after{content:'';flex:1;height:1px;background:var(--border)}
+.foot{margin-top:44px;text-align:center;color:#475569;font-size:12px;font-family:'IBM Plex Mono',monospace;line-height:1.8}
+.fu{opacity:0;transform:translateY(18px);animation:fu .5s ease forwards}
+.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.32s}.d4{animation-delay:.42s}.d5{animation-delay:.52s}
+@keyframes fu{to{opacity:1;transform:translateY(0)}}
 </style>
 </head>
 <body>
-
-<div class="container">
-
-  <div class="header fade-up delay-1">
-    <div class="badge">
-      <div class="badge-dot"></div>
-      EMS Tools — ระบบ Online
-    </div>
+<div class="wrap">
+  <div class="fu d1" style="text-align:center;margin-bottom:48px">
+    <div class="badge"><div class="dot"></div> EMS Tools — ระบบ Online</div>
     <h1>ระบบบันทึกข้อมูล<br><span>การแพทย์ฉุกเฉิน</span></h1>
-    <p>เครื่องมือดิจิทัลสำหรับทีม EMS บันทึกข้อมูลผู้ป่วยและวิเคราะห์สาเหตุความล่าช้า</p>
+    <p class="sub">เครื่องมือดิจิทัลสำหรับทีม EMS บันทึกข้อมูลผู้ป่วยและวิเคราะห์สาเหตุความล่าช้า</p>
   </div>
-
   <div class="cards">
-
-    <a class="card card-blue fade-up delay-2" href="pre_hospital_app.html">
-      <div class="card-inner">
-        <div class="card-top">
-          <div class="card-icon icon-blue">🚑</div>
-          <span class="card-tag tag-blue">Primary Report</span>
-        </div>
+    <a class="card cb fu d2" href="pre_hospital_app.html">
+      <div class="ci">
+        <div class="ct"><div class="ic ib">🚑</div><span class="tag tb">Primary Report</span></div>
         <h2>Pre-Hospital Patient Report</h2>
         <p>บันทึกข้อมูลผู้ป่วย ณ จุดเกิดเหตุ ครอบคลุม Triage, Primary Survey (XABCD), Vital Signs และการรักษา</p>
-        <div class="card-features">
-          <span class="feature-pill">📋 Triage Code</span>
-          <span class="feature-pill">🔍 XABCD Assessment</span>
-          <span class="feature-pill">📊 Vital Signs</span>
-          <span class="feature-pill">💊 Treatment Log</span>
-          <span class="feature-pill">📱 Mobile Ready</span>
+        <div class="pills">
+          <span class="pill">📋 Triage Code</span>
+          <span class="pill">🔍 XABCD Assessment</span>
+          <span class="pill">📊 Vital Signs</span>
+          <span class="pill">💊 Treatment Log</span>
+          <span class="pill">📱 Mobile Ready</span>
         </div>
-        <div class="card-footer">
-          <span class="card-version">v2.2</span>
-          <div class="card-arrow arrow-blue">↗</div>
-        </div>
+        <div class="cf"><span class="ver">v2.2</span><div class="arr ab">↗</div></div>
       </div>
     </a>
-
-    <div class="divider fade-up delay-3">หรือ</div>
-
-    <a class="card card-orange fade-up delay-4" href="delay.html">
-      <div class="card-inner">
-        <div class="card-top">
-          <div class="card-icon icon-orange">⏱️</div>
-          <span class="card-tag tag-orange">Delay Analysis</span>
-        </div>
+    <div class="div fu d3">หรือ</div>
+    <a class="card co fu d4" href="delay.html">
+      <div class="ci">
+        <div class="ct"><div class="ic io">⏱️</div><span class="tag to">Delay Analysis</span></div>
         <h2>EMS Delay Analysis Report</h2>
         <p>วิเคราะห์สาเหตุการปฏิบัติการล่าช้า เกณฑ์ระยะทาง ≤ 10 กม. แต่ใช้เวลาเกิน 10 นาที พร้อม Export PDF</p>
-        <div class="card-features">
-          <span class="feature-pill">👥 Personnel</span>
-          <span class="feature-pill">📍 Location</span>
-          <span class="feature-pill">🚗 Vehicle</span>
-          <span class="feature-pill">🌧️ Situation</span>
-          <span class="feature-pill">📄 Export PDF</span>
+        <div class="pills">
+          <span class="pill">👥 Personnel</span>
+          <span class="pill">📍 Location</span>
+          <span class="pill">🚗 Vehicle</span>
+          <span class="pill">🌧️ Situation</span>
+          <span class="pill">📄 Export PDF</span>
         </div>
-        <div class="card-footer">
-          <span class="card-version">v1.0</span>
-          <div class="card-arrow arrow-orange">↗</div>
-        </div>
+        <div class="cf"><span class="ver">v1.0</span><div class="arr ao">↗</div></div>
       </div>
     </a>
-
   </div>
-
-  <div class="footer fade-up delay-5">
+  <div class="foot fu d5">
     <div>udon2536 · EMS Digital Tools</div>
-    <div style="margin-top:4px; color: #334155;">report.github.io</div>
+    <div style="color:#334155;margin-top:3px">report.github.io</div>
   </div>
-
 </div>
-
 </body>
 </html>
