@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS Detailed Delay Analysis</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body { font-family: 'Sarabun', sans-serif; background-color: #fffaf5; color: #431407; }
+        .reason-card { transition: all 0.2s; border: 1px solid #ffedd5; background: white; cursor: pointer; height: 100%; }
+        .reason-card:hover { border-color: #fb923c; background-color: #fff7ed; }
+        .reason-card.selected { border-color: #f97316; background-color: #ffedd5; box-shadow: 0 0 0 2px #f97316; }
+        .category-title { border-left: 4px solid #f97316; padding-left: 12px; margin-bottom: 16px; font-weight: 600; color: #9a3412; font-size: 1.1rem; }
+        #summaryDisplay { display: none; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        
+        /* เพิ่มสไตล์พิเศษสำหรับการพิมพ์เพื่อให้แน่ใจว่าสีพื้นหลัง (Background) ติดไปใน PDF ทุกเบราว์เซอร์ */
+        @media print {
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div id="formContainer" class="max-w-4xl mx-auto">
+        <header class="mb-10 text-center">
+            <h1 class="text-2xl font-bold text-orange-900">บันทึกวิเคราะห์สาเหตุการปฏิบัติการล่าช้า (Detailed)</h1>
+            <p class="text-orange-600 mt-2 italic text-sm">เกณฑ์: ระยะทาง ≤ 10 กม. แต่ใช้เวลาเกิน 10 นาที</p>
+        </header>
+
+        <section class="bg-white rounded-3xl p-6 shadow-sm border border-orange-100 mb-8 grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div>
+                <label class="block text-xs font-bold text-orange-400 uppercase mb-2">เลขปฏิบัติการ / HN</label>
+                <input type="text" id="hn" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:outline-none focus:border-orange-400" placeholder="ระบุเลขปฏิบัติการและHN">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-orange-400 uppercase mb-2">วันที่ปฏิบัติการ</label>
+                <input type="date" id="currentDate" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-orange-400 uppercase mb-2">Response Time (นาที)</label>
+                <input type="number" id="timeSpent" class="w-full p-3 bg-orange-50 border border-orange-100 rounded-xl focus:outline-none" placeholder="เช่น 15">
+            </div>
+        </section>
+
+        <div class="space-y-12">
+            
+            <section class="category-section" data-category="บุคลากร (Personnel)">
+                <h3 class="category-title">1. ปัจจัยจากบุคลากร (Personnel)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">Chute Time นาน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">เตรียมตัวช้า/ติดภารกิจอื่น</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ทักษะการตัดสินใจ</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ประเมินอาการหรือ Triage คลาดเคลื่อน</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ความอ่อนล้า (Fatigue)</p>
+                        <p class="text-[11px] text-orange-500 mt-1">เข้าเวรติดต่อกันนานเกินไป</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">สื่อสารคลาดเคลื่อน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">รับประเด็นพิกัดหรืออาการผิด</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" data-category="สถานที่ (Location)">
+                <h3 class="category-title">2. ปัจจัยด้านสถานที่ (Location)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ผังเมืองซับซ้อน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ซอยแคบ/หมู่บ้านซับซ้อน/คอนโดสูง</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">พิกัดไม่ชัดเจน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ไม่มีบ้านเลขที่/ผู้แจ้งระบุจุดผิด</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ระยะทางทางกายภาพ</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ฐานจอดรถอยู่ห่างไกลจากโซนเกิดเหตุ</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">อุปสรรคบนถนน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ปิดถนนซ่อมแซม/ลูกระนาด/สิ่งกีดขวาง</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" data-category="รถและอุปกรณ์ (Vehicle)">
+                <h3 class="category-title">3. ปัจจัยด้านรถและอุปกรณ์ (Vehicles & Equipment)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">สภาพรถ (Maintenance)</p>
+                        <p class="text-[11px] text-orange-500 mt-1">เครื่องยนต์มีปัญหา/รถเสียกลางทาง</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">อุปกรณ์ไม่พร้อม</p>
+                        <p class="text-[11px] text-orange-500 mt-1">แบตหมด/หาอุปกรณ์ไม่เจอ/ไม่ครบ</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ขนาดรถไม่เหมาะสม</p>
+                        <p class="text-[11px] text-orange-500 mt-1">รถใหญ่เข้าซอยแคบไม่ได้/ติดขัด</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">GPS/Navi ล้มเหลว</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ระบบนำทางไม่เสถียร/ไม่อัปเดต</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" data-category="ช่วงเวลา (Time)">
+                <h3 class="category-title">4. ปัจจัยด้านช่วงเวลา (Time Periods)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ชั่วโมงเร่งด่วน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">Rush Hour/รถหนาแน่นเปิดไซเรนไม่ได้</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ช่วงผลัดเปลี่ยนเวร</p>
+                        <p class="text-[11px] text-orange-500 mt-1">รอยต่อการรับส่งข้อมูล/เตรียมความพร้อม</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ทัศนวิสัยกลางคืน</p>
+                        <p class="text-[11px] text-orange-500 mt-1">มองหาป้ายชื่อซอย/บ้านเลขที่ยาก</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ช่วงเทศกาล</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ปริมาณรถสูงกว่าปกติ/ทรัพยากรตึงตัว</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="category-section" data-category="สถานการณ์ (Situation)">
+                <h3 class="category-title">5. ปัจจัยด้านสถานการณ์ (Situations)</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">เหตุซ้อน (Resource Sat.)</p>
+                        <p class="text-[11px] text-orange-500 mt-1">มีหลายเหตุพร้อมกัน/รถไม่พอ</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ความปลอดภัยที่เกิดเหตุ</p>
+                        <p class="text-[11px] text-orange-500 mt-1">รอเคลียร์ Scene/รอตำรวจ-ดับเพลิง</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">สภาพอากาศ</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ฝนตกหนักมาก/น้ำท่วมขัง/หมอกจัด</p>
+                    </div>
+                    <div class="reason-card p-4 rounded-2xl" onclick="toggleCard(this)">
+                        <p class="font-bold text-sm">ข้อมูลหลอก/ไม่พอ</p>
+                        <p class="text-[11px] text-orange-500 mt-1">ผู้แจ้งตื่นตระหนก/แจ้งเหตุเท็จ</p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h3 class="category-title">บันทึกเพิ่มเติม</h3>
+                <textarea id="notes" class="w-full p-4 bg-white border border-orange-100 rounded-2xl focus:outline-none focus:border-orange-400 min-h-[100px]" placeholder="อธิบายสถานการณ์เพิ่มเติม (ถ้ามี)..."></textarea>
+            </section>
+
+            <footer class="pb-20 text-center">
+                <button onclick="summarizeData()" class="bg-orange-600 hover:bg-orange-700 text-white px-16 py-4 rounded-2xl font-bold text-lg shadow-xl shadow-orange-200 transition-all active:scale-95">
+                    สรุปวิเคราะห์ผล
+                </button>
+            </footer>
+        </div>
+    </div>
+
+    <div id="summaryDisplay" class="max-w-2xl mx-auto py-10">
+        <div id="pdfContent" class="bg-white rounded-[2.5rem] shadow-2xl border border-orange-100 overflow-hidden p-8 space-y-6">
+            <div class="bg-orange-600 -mx-8 -mt-8 p-8 text-white text-center">
+                <h2 class="text-2xl font-bold">ผลการวิเคราะห์ความล่าช้า</h2>
+                <p id="sum_hn" class="mt-2 opacity-90"></p>
+                <p id="sum_date" class="text-xs opacity-75 mt-1"></p>
+            </div>
+            
+            <div>
+                <p class="text-xs font-bold text-orange-400 uppercase tracking-widest mb-4">สาเหตุย่อยที่พบ:</p>
+                <div id="reasons_list" class="flex flex-wrap gap-2"></div>
+            </div>
+
+            <div class="bg-orange-50 p-6 rounded-3xl border border-orange-100">
+                <p class="text-sm font-bold text-orange-800 mb-2 italic underline">สรุปประเด็นหลักที่ต้องปรับปรุง:</p>
+                <p id="main_issue" class="text-orange-900 leading-relaxed font-semibold"></p>
+            </div>
+
+            <div class="pt-4 border-t border-orange-50">
+                <p id="sum_time" class="text-sm text-orange-700 font-semibold"></p>
+                <p id="sum_notes" class="text-sm text-gray-600 mt-2 italic whitespace-pre-wrap"></p>
+            </div>
+        </div>
+
+        <div class="mt-6 space-y-3">
+            <button onclick="downloadPDF()" class="w-full py-4 rounded-2xl bg-emerald-600 text-white font-bold text-lg hover:bg-emerald-700 shadow-lg shadow-emerald-100 transition-all active:scale-95 flex items-center justify-center gap-2">
+                💾 บันทึกเป็นไฟล์ PDF
+            </button>
+            <button onclick="window.location.reload()" class="w-full py-4 rounded-2xl bg-orange-100 text-orange-700 font-bold hover:bg-orange-200 transition-colors">
+                ทำแบบบันทึกใหม่
+            </button>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('currentDate').valueAsDate = new Date();
+
+        // ฟังก์ชันเลือก/ไม่เลือกการ์ด
+        function toggleCard(card) {
+            card.classList.toggle('selected');
+        }
+
+        // ฟังก์ชันรวมข้อมูลแสดงหน้าสรุปผล
+        function summarizeData() {
+            const hn = document.getElementById('hn').value || 'N/A';
+            const dateInput = document.getElementById('currentDate').value;
+            const time = document.getElementById('timeSpent').value || '?';
+            const notes = document.getElementById('notes').value || '-';
+            const selectedCards = document.querySelectorAll('.reason-card.selected');
+            
+            if (selectedCards.length === 0) {
+                alert('กรุณาเลือกสาเหตุที่พบอย่างน้อย 1 รายการ');
+                return;
+            }
+
+            const formattedDate = dateInput ? new Date(dateInput).toLocaleDateString('th-TH', { year: 'numeric', month: 'long', day: 'numeric' }) : 'ไม่ระบุวันที่';
+
+            const reasonsList = document.getElementById('reasons_list');
+            reasonsList.innerHTML = '';
+            
+            let catStats = {};
+
+            selectedCards.forEach(card => {
+                const title = card.querySelector('.font-bold').innerText;
+                const cat = card.closest('.category-section').getAttribute('data-category');
+                
+                const tag = document.createElement('span');
+                tag.className = 'px-3 py-1 bg-orange-100 text-orange-700 text-xs rounded-full font-medium border border-orange-200';
+                tag.innerText = title;
+                reasonsList.appendChild(tag);
+
+                catStats[cat] = (catStats[cat] || 0) + 1;
+            });
+
+            let topCat = Object.keys(catStats).reduce((a, b) => catStats[a] > catStats[b] ? a : b);
+
+            document.getElementById('sum_hn').innerText = `HN/Case ID: ${hn}`;
+            document.getElementById('sum_date').innerText = `วันที่บันทึกเหตุ: ${formattedDate}`;
+            document.getElementById('sum_time').innerText = `Response Time: ${time} นาที (เกณฑ์ปกติ ≤ 10 นาที)`;
+            document.getElementById('main_issue').innerText = `จากการวิเคราะห์ พบว่าอุปสรรคส่วนใหญ่มาจาก "${topCat}" เป็นปัจจัยหลักที่ส่งผลให้เข้าถึงที่เกิดเหตุล่าช้าในครั้งนี้`;
+            document.getElementById('sum_notes').innerText = `บันทึกเพิ่มเติม:\n${notes}`;
+
+            document.getElementById('formContainer').style.display = 'none';
+            document.getElementById('summaryDisplay').style.display = 'block';
+            window.scrollTo(0,0);
+        }
+
+        // ฟังก์ชันดาวน์โหลด PDF ด้วย html2pdf.js
+        function downloadPDF() {
+            const element = document.getElementById('pdfContent');
+            const hnText = document.getElementById('hn').value || 'N/A';
+            
+            const opt = {
+                margin:       [15, 15, 15, 15], 
+                filename:     `EMS-Delay-Report-HN-${hnText}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true,
+                    logging: false,
+                    letterRendering: true
+                }, 
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+            };
+
+            html2pdf().set(opt).from(element).save();
+        }
+    </script>
+</body>
+</html>
