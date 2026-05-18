@@ -443,7 +443,7 @@ textarea { resize: none; line-height: 1.5; }
           </div>
 
           <div class="field">
-            <label class="lbl">MOI / NOI — กลไกการบาดเจ็บ / อาการ</label>
+            <label class="lbl">MOI / NOI</label>
             <textarea id="moi" rows="3" placeholder="เช่น ถูกรถชน / แน่นหน้าอกเฉียบพลัน / หมดสติไม่ทราบสาเหตุ"></textarea>
           </div>
         </div>
@@ -457,34 +457,33 @@ textarea { resize: none; line-height: 1.5; }
           <div class="field">
             <label class="lbl">Assess Response (AVPU)</label>
             <div class="radio-group">
-              <div class="radio-pill"><input type="radio" name="avpu" id="av-a" value="Alert"><label for="av-a">A — Alert</label></div>
-              <div class="radio-pill"><input type="radio" name="avpu" id="av-v" value="Voice"><label for="av-v">V — Voice</label></div>
-              <div class="radio-pill"><input type="radio" name="avpu" id="av-p" value="Pain"><label for="av-p">P — Pain</label></div>
-              <div class="radio-pill"><input type="radio" name="avpu" id="av-u" value="Unresponsive"><label for="av-u">U — Unresponsive</label></div>
+              <div class="radio-pill"><input type="radio" name="avpu" id="av-a" value="Alert"><label for="av-a">A - Alert</label></div>
+              <div class="radio-pill"><input type="radio" name="avpu" id="av-v" value="Voice"><label for="av-v">V - Voice</label></div>
+              <div class="radio-pill"><input type="radio" name="avpu" id="av-p" value="Pain"><label for="av-p">P - Pain</label></div>
+              <div class="radio-pill"><input type="radio" name="avpu" id="av-u" value="Unresponsive"><label for="av-u">U - Unresponsive</label></div>
             </div>
           </div>
 
           <div class="field">
-            <label class="lbl">🩸 X — Exsanguination</label>
+            <label class="lbl">Exsanguination</label>
             <div class="check-group">
-              <div class="check-item"><input type="checkbox" id="exs"><label for="exs">มีตกเลือดรุนแรง และได้รับการห้ามเลือดแล้ว</label></div>
+              <div class="check-item"><input type="checkbox" id="exs"><label for="exs">มีตกเลือดรุนแรง และได้รับการหามเลือดแล้ว</label></div>
             </div>
           </div>
 
           <div class="field">
-            <label class="lbl">💨 A — Airway</label>
+            <label class="lbl">A - Airway</label>
             <div class="check-group">
               <div class="check-item"><input type="checkbox" id="aw-clear"><label for="aw-clear">Clear</label></div>
               <div class="check-item"><input type="checkbox" id="aw-sec"><label for="aw-sec">Secretion</label></div>
               <div class="check-item"><input type="checkbox" id="aw-stri"><label for="aw-stri">Stridor</label></div>
               <div class="check-item"><input type="checkbox" id="aw-fb"><label for="aw-fb">Foreign body</label></div>
             </div>
-            <label class="lbl" style="margin-top: 10px;">อื่นๆ</label>
-            <input type="text" id="aw-other">
+            <input type="text" id="aw-other" placeholder="Airway - อื่นๆ">
           </div>
 
           <div class="field">
-            <label class="lbl">🫁 B — Breathing</label>
+            <label class="lbl">B - Breathing</label>
             <div class="sub-header">Breathing Sound</div>
             <div class="check-group">
               <div class="check-item"><input type="checkbox" id="bs-clear"><label for="bs-clear">Clear</label></div>
@@ -501,12 +500,11 @@ textarea { resize: none; line-height: 1.5; }
               <div class="check-item"><input type="checkbox" id="rd-trachea"><label for="rd-trachea">Trachea shift</label></div>
               <div class="check-item"><input type="checkbox" id="rd-poor"><label for="rd-poor">Poor Air</label></div>
             </div>
-            <label class="lbl" style="margin-top: 10px;">Etc.</label>
-            <input type="text" id="rd-other">
+            <input type="text" id="rd-other" placeholder="Breathing - อื่นๆ">
           </div>
 
           <div class="field">
-            <label class="lbl">❤️ C — Circulation</label>
+            <label class="lbl">C - Circulation</label>
             <div class="sub-header">Bleeding</div>
             <div class="check-group">
               <div class="check-item"><input type="checkbox" id="bl-ext"><label for="bl-ext">External</label></div>
@@ -531,7 +529,7 @@ textarea { resize: none; line-height: 1.5; }
           </div>
 
           <div class="field">
-            <label class="lbl">🧠 D — Disability (Neuro)</label>
+            <label class="lbl">D - Disability (Neuro)</label>
             <div class="sub-header">GCS Score</div>
             <div class="gcs-row">
               <div class="gcs-cell">
@@ -568,7 +566,7 @@ textarea { resize: none; line-height: 1.5; }
                 </div>
               </div>
             </div>
-            <div class="sub-header">Motor Power Grade (0–5)</div>
+            <div class="sub-header">Motor Power Grade</div>
             <div class="motor-grid">
               <div class="motor-cell">
                 <div class="lbl">Rt Upper</div>
@@ -600,10 +598,10 @@ textarea { resize: none; line-height: 1.5; }
             <thead>
               <tr>
                 <th>TIME</th>
-                <th>BP (mmHg)</th>
+                <th>BP</th>
                 <th>HR</th>
                 <th>RR</th>
-                <th>SpO₂%</th>
+                <th>SpO2%</th>
                 <th>DTX</th>
                 <th style="width:36px"></th>
               </tr>
@@ -612,26 +610,26 @@ textarea { resize: none; line-height: 1.5; }
           </table>
         </div>
         <div style="padding:10px">
-          <button class="add-btn" onclick="addVS()">＋ เพิ่มแถว Vital Signs</button>
+          <button class="add-btn" onclick="addVS()">+ Add Vital Signs</button>
         </div>
       </div>
     </div>
 
     <div class="section" id="sec3">
       <div class="card">
-        <div class="card-header"><span class="icon">💊</span>Management & Treatment</div>
+        <div class="card-header"><span class="icon">💊</span>Treatment</div>
         <div class="card-body">
           <div id="tx-body"></div>
-          <button class="add-btn" onclick="addTX()">＋ เพิ่มรายการ Treatment</button>
+          <button class="add-btn" onclick="addTX()">+ Add Treatment</button>
         </div>
       </div>
 
       <div class="card">
-        <div class="card-header"><span class="icon">✍️</span>ผู้บันทึก</div>
+        <div class="card-header"><span class="icon">✍️</span>Recorder</div>
         <div class="card-body">
           <div class="field">
-            <label class="lbl">ชื่อ-นามสกุล ผู้บันทึก</label>
-            <input type="text" id="recorder" placeholder="เช่น นพ.สมชาย / พยาบาล สมหญิง">
+            <label class="lbl">ชื่อผู้บันทึก</label>
+            <input type="text" id="recorder" placeholder="e.g. นพ.สมชาย">
           </div>
         </div>
       </div>
@@ -640,26 +638,25 @@ textarea { resize: none; line-height: 1.5; }
   </div>
 
   <div id="action-bar">
-    <button class="btn-secondary" onclick="showSetupModal()">⚙️ ตั้งค่า GitHub</button>
-    <button class="btn-primary" onclick="saveToGithub()">💾 บันทึกลง Git</button>
+    <button class="btn-secondary" onclick="showSetupModal()">⚙️ Setup</button>
+    <button class="btn-primary" onclick="saveToGithub()">💾 Save to Git</button>
   </div>
 
 </div>
 
 <div class="setup-modal" id="setupModal">
   <div class="modal-content">
-    <h2>⚙️ ตั้งค่า GitHub Token</h2>
-    <p><strong>สร้าง GitHub Token:</strong></p>
-    <p style="font-size: 12px;">ไปที่ Settings → Developer settings → Personal access tokens → Tokens (classic) → Generate new token → เลือก <code style="background: #f0f0f0; padding: 2px 6px;">repo</code></p>
+    <h2>GitHub Token Setup</h2>
+    <p>Settings > Developer settings > Personal access tokens > repo</p>
     <label>GitHub Token:</label>
     <input type="password" id="githubToken" placeholder="ghp_xxxx...">
-    <label>Repository (username/repo):</label>
+    <label>Repository:</label>
     <input type="text" id="repoName" placeholder="udon2536/report.github.io">
     <label>Branch:</label>
-    <input type="text" id="branch" placeholder="main" value="main">
+    <input type="text" id="branch" value="main">
     <div class="modal-buttons">
-      <button class="modal-btn-primary" onclick="saveSetup()">บันทึก</button>
-      <button class="modal-btn-secondary" onclick="closeSetupModal()">ยกเลิก</button>
+      <button class="modal-btn-primary" onclick="saveSetup()">Save</button>
+      <button class="modal-btn-secondary" onclick="closeSetupModal()">Cancel</button>
     </div>
   </div>
 </div>
@@ -667,10 +664,13 @@ textarea { resize: none; line-height: 1.5; }
 <div id="toast"></div>
 
 <script>
+function utf8ToBase64(str) {
+  return btoa(unescape(encodeURIComponent(str)));
+}
+
 const now = new Date();
 document.getElementById('date-badge').textContent = now.toLocaleDateString('th-TH', {day:'2-digit', month:'short', year:'2-digit'});
 document.getElementById('inc-date').value = now.toISOString().split('T')[0];
-
 const hours = String(now.getHours()).padStart(2, '0');
 const minutes = String(now.getMinutes()).padStart(2, '0');
 document.getElementById('inc-time').value = `${hours}:${minutes}`;
@@ -689,10 +689,10 @@ function addVS() {
   tr.innerHTML = `
     <td><input type="time" placeholder="--:--"></td>
     <td><input type="text" placeholder="120/80"></td>
-    <td><input type="number" placeholder="80" min="0" max="300"></td>
-    <td><input type="number" placeholder="20" min="0" max="60"></td>
-    <td><input type="number" placeholder="98" min="0" max="100"></td>
-    <td><input type="number" placeholder="100" min="0" max="600"></td>
+    <td><input type="number" placeholder="80"></td>
+    <td><input type="number" placeholder="20"></td>
+    <td><input type="number" placeholder="98"></td>
+    <td><input type="number" placeholder="100"></td>
     <td><button class="del-btn" onclick="document.getElementById('vs-${id}').remove()">×</button></td>
   `;
   tbody.appendChild(tr);
@@ -707,7 +707,7 @@ function addTX() {
   div.id = 'tx-' + id;
   div.innerHTML = `
     <input type="time" placeholder="--:--">
-    <input type="text" placeholder="เช่น On IV Fluid NSS 1000ml / ใส่ท่อช่วยหายใจ / ให้ O₂ mask 10L/min">
+    <input type="text" placeholder="e.g. IV Fluid NSS 1000ml">
     <button class="del-btn" onclick="document.getElementById('tx-${id}').remove()">×</button>
   `;
   body.appendChild(div);
@@ -739,13 +739,13 @@ function saveSetup() {
   const token = document.getElementById('githubToken').value.trim();
   const repo = document.getElementById('repoName').value.trim();
   if(!token || !repo) {
-    showToast('❌ กรุณากรอก Token และ Repository');
+    showToast('Error: Token and Repo required');
     return;
   }
   localStorage.setItem('githubToken', token);
   localStorage.setItem('repoName', repo);
   localStorage.setItem('branch', document.getElementById('branch').value || 'main');
-  showToast('✅ บันทึกการตั้งค่า');
+  showToast('Setup saved');
   closeSetupModal();
 }
 
@@ -770,7 +770,7 @@ async function saveToGithub() {
   const branch = localStorage.getItem('branch') || 'main';
 
   if(!token || !repo) {
-    showToast('❌ กรุณาตั้งค่า GitHub Token ก่อน');
+    showToast('Error: Setup required');
     setTimeout(() => showSetupModal(), 500);
     return;
   }
@@ -839,13 +839,14 @@ async function saveToGithub() {
     });
     data.treatments = treatments;
 
-    const csvLine = `"${data.timestamp}","${data.date}","${data.time}","${data.idc}","${data.rc}","${data.gender}","${data.age}","${data.weight}","${data.moi.replace(/"/g, '""')}","${data.avpu}","${data.exsanguination}","${data.airway.replace(/"/g, '""')}","${data.airway_other}","${data.breathing_sound.replace(/"/g, '""')}","${data.respiratory_distress.replace(/"/g, '""')}","${data.breathing_other}","${data.bleeding.replace(/"/g, '""')}","${data.capillary_refill}","${data.tissue_color.replace(/"/g, '""')}","${data.skin_temp}","${data.gcs_e}","${data.gcs_v}","${data.gcs_m}","${data.pupil_rt}","${data.rtl_rt}","${data.pupil_lt}","${data.rtl_lt}","${data.mp_ru}","${data.mp_lu}","${data.mp_rl}","${data.mp_ll}","${JSON.stringify(data.vital_signs).replace(/"/g, '""')}","${JSON.stringify(data.treatments).replace(/"/g, '""')}","${data.recorder}"\n`;
+    const jsonStr = JSON.stringify(data);
+    const csvLine = `"${data.timestamp}","${data.date}","${data.time}","${data.idc}","${data.rc}","${data.gender}","${data.age}","${data.weight}","${data.moi.replace(/"/g, '""')}","${data.avpu}","${data.exsanguination}","${data.airway.replace(/"/g, '""')}","${data.airway_other}","${data.breathing_sound.replace(/"/g, '""')}","${data.respiratory_distress.replace(/"/g, '""')}","${data.breathing_other}","${data.bleeding.replace(/"/g, '""')}","${data.capillary_refill}","${data.tissue_color.replace(/"/g, '""')}","${data.skin_temp}","${data.gcs_e}","${data.gcs_v}","${data.gcs_m}","${data.pupil_rt}","${data.rtl_rt}","${data.pupil_lt}","${data.rtl_lt}","${data.mp_ru}","${data.mp_lu}","${data.mp_rl}","${data.mp_ll}","${jsonStr.replace(/"/g, '""')}","${data.recorder}"\n`;
 
     const [owner, repoName] = repo.split('/');
     const apiUrl = `https://api.github.com/repos/${owner}/${repoName}/contents/ems_records.csv`;
 
     let sha = null;
-    let content = '"Timestamp","Date","Time","IDC","RC","Gender","Age","Weight","MOI","AVPU","Exsanguination","Airway","Airway_อื่นๆ","Breathing_Sound","Respiratory_Distress","Breathing_อื่นๆ","Bleeding","Capillary_Refill","Tissue_Color","Skin_Temp","GCS_E","GCS_V","GCS_M","Pupil_R","RTL_R","Pupil_L","RTL_L","MP_Rt_Upper","MP_Lt_Upper","MP_Rt_Lower","MP_Lt_Lower","Vital_Signs","Treatments","ผู้บันทึก"\n';
+    let content = '"Timestamp","Date","Time","IDC","RC","Gender","Age","Weight","MOI","AVPU","Exsanguination","Airway","Airway_Other","Breathing_Sound","Respiratory_Distress","Breathing_Other","Bleeding","Capillary_Refill","Tissue_Color","Skin_Temp","GCS_E","GCS_V","GCS_M","Pupil_R","RTL_R","Pupil_L","RTL_L","MP_Rt_Upper","MP_Lt_Upper","MP_Rt_Lower","MP_Lt_Lower","Vital_Signs","Recorder"\n';
 
     try {
       const response = await fetch(apiUrl, {
@@ -854,10 +855,11 @@ async function saveToGithub() {
       if(response.ok) {
         const fileData = await response.json();
         sha = fileData.sha;
-        content = atob(fileData.content) + csvLine;
+        const decodedContent = atob(fileData.content);
+        content = decodedContent + csvLine;
       }
     } catch(e) {
-      content = '"Timestamp","Date","Time","IDC","RC","Gender","Age","Weight","MOI","AVPU","Exsanguination","Airway","Airway_อื่นๆ","Breathing_Sound","Respiratory_Distress","Breathing_อื่นๆ","Bleeding","Capillary_Refill","Tissue_Color","Skin_Temp","GCS_E","GCS_V","GCS_M","Pupil_R","RTL_R","Pupil_L","RTL_L","MP_Rt_Upper","MP_Lt_Upper","MP_Rt_Lower","MP_Lt_Lower","Vital_Signs","Treatments","ผู้บันทึก"\n' + csvLine;
+      content = '"Timestamp","Date","Time","IDC","RC","Gender","Age","Weight","MOI","AVPU","Exsanguination","Airway","Airway_Other","Breathing_Sound","Respiratory_Distress","Breathing_Other","Bleeding","Capillary_Refill","Tissue_Color","Skin_Temp","GCS_E","GCS_V","GCS_M","Pupil_R","RTL_R","Pupil_L","RTL_L","MP_Rt_Upper","MP_Lt_Upper","MP_Rt_Lower","MP_Lt_Lower","Vital_Signs","Recorder"\n' + csvLine;
     }
 
     const uploadResponse = await fetch(apiUrl, {
@@ -867,15 +869,15 @@ async function saveToGithub() {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        message: `Add EMS record ${new Date().toISOString()}`,
-        content: btoa(content),
+        message: `EMS Record ${new Date().toISOString()}`,
+        content: utf8ToBase64(content),
         branch: branch,
         ...(sha && { sha })
       })
     });
 
     if(uploadResponse.ok) {
-      showToast('✅ บันทึกลง GitHub สำเร็จ!');
+      showToast('Success! Data saved to GitHub');
       setTimeout(() => {
         document.querySelectorAll('input, textarea').forEach(el => {
           if(el.type === 'checkbox' || el.type === 'radio') el.checked = false;
@@ -890,11 +892,11 @@ async function saveToGithub() {
         switchTab(0, document.querySelector('.tab-btn'));
       }, 1000);
     } else {
-      showToast('❌ บันทึกไม่สำเร็จ ตรวจสอบ Token');
+      showToast('Error: Check token');
     }
   } catch(error) {
     console.error(error);
-    showToast('❌ เกิดข้อผิดพลาด: ' + error.message);
+    showToast('Error: ' + error.message);
   }
 }
 </script>
