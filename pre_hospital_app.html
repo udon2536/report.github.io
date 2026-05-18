@@ -328,15 +328,17 @@ textarea { resize: none; line-height: 1.5; }
 .btn-secondary {
   flex: 1;
   padding: 13px;
-  background: var(--gray-100);
-  color: var(--gray-700);
-  border: 1.5px solid var(--gray-200);
+  background: #f1f5f9;
+  color: #1e293b;
+  border: 1.5px solid #cbd5e1;
   border-radius: var(--radius-sm);
   font-size: 15px;
   font-weight: 600;
   font-family: 'Sarabun', sans-serif;
   cursor: pointer;
+  transition: all 0.15s;
 }
+.btn-secondary:active { background: #e2e8f0; }
 
 /* Pupil row */
 .pupil-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
@@ -398,7 +400,6 @@ textarea { resize: none; line-height: 1.5; }
 
   <div id="content">
 
-    <!-- SECTION 0: Triage / Incident -->
     <div class="section active" id="sec0">
 
       <div class="card">
@@ -468,10 +469,7 @@ textarea { resize: none; line-height: 1.5; }
         </div>
       </div>
 
-    </div><!-- /sec0 -->
-
-    <!-- SECTION 1: Assessment -->
-    <div class="section" id="sec1">
+    </div><div class="section" id="sec1">
 
       <div class="card">
         <div class="card-header"><span>Assess Response (AVPU)</span></div>
@@ -614,6 +612,7 @@ textarea { resize: none; line-height: 1.5; }
             </div>
             <div class="motor-cell">
               <div class="lbl">Rt Lower</div>
+              <div class="lbl">Rt Lower</div>
               <input type="text" id="mp-rl" maxlength="1" placeholder="5">
             </div>
             <div class="motor-cell">
@@ -624,10 +623,7 @@ textarea { resize: none; line-height: 1.5; }
         </div>
       </div>
 
-    </div><!-- /sec1 -->
-
-    <!-- SECTION 2: Vital Signs -->
-    <div class="section" id="sec2">
+    </div><div class="section" id="sec2">
       <div class="card">
         <div class="card-header">
           <span>📊 Vital Signs</span>
@@ -652,10 +648,7 @@ textarea { resize: none; line-height: 1.5; }
           <button class="add-btn" onclick="addVS()">＋ เพิ่มแถว Vital Signs</button>
         </div>
       </div>
-    </div><!-- /sec2 -->
-
-    <!-- SECTION 3: Treatment -->
-    <div class="section" id="sec3">
+    </div><div class="section" id="sec3">
       <div class="card">
         <div class="card-header"><span>💊 Management & Treatment</span></div>
         <div class="card-body">
@@ -673,18 +666,12 @@ textarea { resize: none; line-height: 1.5; }
           </div>
         </div>
       </div>
-    </div><!-- /sec3 -->
-
-  </div><!-- /content -->
-
-  <div id="action-bar">
-    <button class="btn-secondary" onclick="window.print()">🖨️ พิมพ์</button>
+    </div></div><div id="action-bar">
+    <button class="btn-secondary" onclick="exportToExcel()">📊 บันทึก Excel</button>
     <button class="btn-primary" onclick="saveData()">💾 บันทึกข้อมูล</button>
   </div>
 
-</div><!-- /app -->
-
-<div id="toast"></div>
+</div><div id="toast"></div>
 
 <script>
 // Date badge
@@ -749,6 +736,141 @@ function showToast(msg) {
 // Save
 function saveData() {
   showToast('✅ บันทึกข้อมูลเรียบร้อยแล้ว');
+}
+
+// Export to Excel (CSV Format with UTF-8 BOM)
+function exportToExcel() {
+  try {
+    // 1. Get Radio Value Helper
+    const getRadioValue = (name) => {
+      const checked = document.querySelector(`input[name="${name}"]:checked`);
+      return checked ? checked.value : '';
+    };
+
+    // 2. Get Checklist Value Helper
+    const getCheckValues = (ids) => {
+      return ids.filter(id => document.getElementById(id)?.checked)
+                .map(id => document.querySelector(`label[for="${id}"]`)?.textContent || id)
+                .join(', ');
+    };
+
+    // 3. Gather Form Data
+    const incDate = document.getElementById('inc-date').value;
+    const incTime = document.getElementById('inc-time').value;
+    const idc = getRadioValue('idc');
+    const rc = getRadioValue('rc');
+    const gender = getRadioValue('gender');
+    const age = document.getElementById('age').value;
+    const weight = document.getElementById('weight').value;
+    const moi = document.getElementById('moi').value.replace(/[\n\r,]/g, ' ');
+
+    // Assessment Data
+    const avpu = getRadioValue('avpu');
+    const exs = document.getElementById('exs').checked ? 'Yes' : 'No';
+    const airway = getCheckValues(['aw-clear', 'aw-sec', 'aw-stri', 'aw-fb']);
+    const awOther = document.getElementById('aw-other').value.replace(/,/g, ' ');
+    
+    const bSound = getCheckValues(['bs-clear', 'bs-wheeze', 'bs-crep', 'bs-dec', 'bs-hunger', 'bs-apnea']);
+    const rDistress = getCheckValues(['rd-dysp', 'rd-tachy', 'rd-trachea', 'rd-poor']);
+    const rdOther = document.getElementById('rd-other').value.replace(/,/g, ' ');
+
+    const bleeding = getCheckValues(['bl-ext', 'bl-int']);
+    const capRefill = getRadioValue('cap');
+    const tissueColor = getCheckValues(['tc-nor', 'tc-pale', 'tc-cyan']);
+    const skinTemp = getRadioValue('temp');
+
+    // Neuro
+    const gcsE = document.getElementById('gcs-e').value;
+    const gcsV = document.getElementById('gcs-v').value;
+    const gcsM = document.getElementById('gcs-m').value;
+    const pupRt = document.getElementById('pup-rt').value;
+    const rtlRt = document.getElementById('rtl-rt').checked ? 'RTL+' : '';
+    const pupLt = document.getElementById('pup-lt').value;
+    const rtlLt = document.getElementById('rtl-lt').checked ? 'RTL+' : '';
+    
+    const mpRu = document.getElementById('mp-ru').value;
+    const mpLu = document.getElementById('mp-lu').value;
+    const mpRl = document.getElementById('mp-rl').value;
+    const mpLl = document.getElementById('mp-ll').value;
+
+    const recorder = document.getElementById('recorder').value.replace(/,/g, ' ');
+
+    // 4. Gather Vital Signs Rows
+    let vsData = [];
+    const vsRows = document.querySelectorAll('#vs-body tr');
+    vsRows.forEach(row => {
+      const inputs = row.querySelectorAll('input');
+      if(inputs.length >= 6) {
+        const time = inputs[0].value || '--:--';
+        const bp = inputs[1].value || '-';
+        const hr = inputs[2].value || '-';
+        const rr = inputs[3].value || '-';
+        const spo2 = inputs[4].value || '-';
+        const dtx = inputs[5].value || '-';
+        vsData.push(`[${time} BP:${bp} HR:${hr} RR:${rr} SpO2:${spo2}% DTX:${dtx}]`);
+      }
+    });
+    const vsSummary = vsData.join(' | ');
+
+    // 5. Gather Treatment Rows
+    let txData = [];
+    const txRows = document.querySelectorAll('.treatment-row');
+    txRows.forEach(row => {
+      const inputs = row.querySelectorAll('input');
+      if(inputs.length >= 2) {
+        const time = inputs[0].value || '--:--';
+        const text = inputs[1].value.replace(/,/g, ' ') || '-';
+        txData.push(`[${time} -> ${text}]`);
+      }
+    });
+    const txSummary = txData.join(' | ');
+
+    // 6. Construct CSV Content
+    let csvRows = [];
+    
+    // Header Row
+    const headers = [
+      'วันที่', 'เวลา At Scene', 'IDC Code', 'Response Code', 'เพศ', 'อายุ (ปี)', 'น้ำหนัก (กก.)', 'กลไกการบาดเจ็บ (MOI/NOI)',
+      'AVPU', 'Exsanguination', 'Airway', 'Airway อื่นๆ', 'Breathing Sound', 'Respiratory Distress', 'Breathing อื่นๆ',
+      'Bleeding', 'Capillary Refill', 'Tissue Color', 'Skin Temp', 'GCS_E', 'GCS_V', 'GCS_M', 
+      'Pupil_R (mm)', 'RTL_R', 'Pupil_L (mm)', 'RTL_L', 'MP_Rt_Upper', 'MP_Lt_Upper', 'MP_Rt_Lower', 'MP_Lt_Lower',
+      'ประวัติ Vital Signs ทั้งหมด', 'รายการ Treatment ทั้งหมด', 'ผู้บันทึก'
+    ];
+    csvRows.push(headers.join(','));
+
+    // Data Row
+    const dataValues = [
+      incDate, incTime, idc, rc, gender, age, weight, `"${moi}"`,
+      avpu, exs, `"${airway}"`, `"${awOther}"`, `"${bSound}"`, `"${rDistress}"`, `"${rdOther}"`,
+      `"${bleeding}"`, capRefill, `"${tissueColor}"`, skinTemp, gcsE, gcsV, gcsM,
+      pupRt, rtlRt, pupLt, rtlLt, mpRu, mpLu, mpRl, mpLl,
+      `"${vsSummary}"`, `"${txSummary}"`, `"${recorder}"`
+    ];
+    csvRows.push(dataValues.join(','));
+
+    const csvContent = csvRows.join('\n');
+
+    // 7. Create Download link with UTF-8 BOM for Thai Language in Excel
+    const BOM = '\uFEFF';
+    const blob = new Blob([BOM + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    
+    // Format Filename: EMS-Report_YYYY-MM-DD_HHMM.csv
+    const timeStr = now.toTimeString().split(' ')[0].replace(/:/g, '');
+    link.setAttribute('download', `EMS-Report_${incDate}_${timeStr.substring(0,4)}.csv`);
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    showToast('📊 ส่งออกไฟล์ Excel (.CSV) สำเร็จ');
+  } catch (error) {
+    console.error(error);
+    showToast('❌ เกิดข้อผิดพลาดในการส่งออกข้อมูล');
+  }
 }
 
 // Prevent zoom on double-tap iOS (keep as UX improvement)
