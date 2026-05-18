@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EMS Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root {
+  --navy: #0f2744;
+  --navy2: #1a3a5c;
+  --blue: #1e6fff;
+  --blue2: #4d94ff;
+  --cyan: #00d4ff;
+  --red: #ff4757;
+  --yellow: #ffa502;
+  --green: #2ed573;
+  --bg: #07152a;
+  --card: #0d2137;
+  --card2: #112840;
+  --border: rgba(30,111,255,0.2);
+  --text: #e8f4ff;
+  --muted: #7aa3cc;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Sarabun', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+}
+
+/* Scanline overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.015) 2px, rgba(0,212,255,0.015) 4px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.container { max-width: 1400px; margin: 0 auto; padding: 24px; position: relative; z-index: 1; }
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.header-left h1 {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--cyan);
+  letter-spacing: 1px;
+  font-family: 'IBM Plex Mono', monospace;
+  text-shadow: 0 0 20px rgba(0,212,255,0.4);
+}
+.header-left p { color: var(--muted); font-size: 13px; margin-top: 4px; }
+.header-right { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.btn {
+  padding: 9px 18px;
+  border: none;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: 'Sarabun', sans-serif;
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.btn-cyan { background: var(--cyan); color: #000; }
+.btn-cyan:hover { background: #00b8d9; transform: translateY(-1px); box-shadow: 0 4px 15px rgba(0,212,255,0.3); }
+.btn-blue { background: var(--blue); color: #fff; }
+.btn-blue:hover { background: #0059e0; transform: translateY(-1px); }
+.btn-green { background: var(--green); color: #000; }
+.btn-green:hover { background: #26c165; transform: translateY(-1px); }
+.btn-outline { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); }
+.btn-outline:hover { background: rgba(0,212,255,0.1); }
+
+/* Config panel */
+.config-panel {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+  flex-wrap: wrap;
+}
+.config-field { display: flex; flex-direction: column; gap: 5px; flex: 1; min-width: 200px; }
+.config-field label { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.config-field input {
+  padding: 9px 13px;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 14px;
+  font-family: 'IBM Plex Mono', monospace;
+  outline: none;
+}
+.config-field input:focus { border-color: var(--cyan); }
+
+/* Stats row */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.stat-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.stat-card:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0,0,0,0.3); }
+.stat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  right: 0; height: 3px;
+}
+.stat-card.cyan::before { background: var(--cyan); }
+.stat-card.blue::before { background: var(--blue); }
+.stat-card.red::before { background: var(--red); }
+.stat-card.yellow::before { background: var(--yellow); }
+.stat-card.green::before { background: var(--green); }
+.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+.stat-value { font-size: 32px; font-weight: 700; font-family: 'IBM Plex Mono', monospace; }
+.stat-card.cyan .stat-value { color: var(--cyan); }
+.stat-card.blue .stat-value { color: var(--blue2); }
+.stat-card.red .stat-value { color: var(--red); }
+.stat-card.yellow .stat-value { color: var(--yellow); }
+.stat-card.green .stat-value { color: var(--green); }
+.stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+/* Charts row */
+.charts-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+}
+.chart-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 16px;
+}
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-item { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 12px; color: var(--text); width: 80px; flex-shrink: 0; }
+.bar-wrap { flex: 1; background: var(--navy); border-radius: 4px; height: 22px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 1s ease; display: flex; align-items: center; padding-left: 8px; font-size: 11px; font-weight: 600; color: #000; }
+.bar-count { font-size: 12px; color: var(--muted); width: 30px; text-align: right; flex-shrink: 0; }
+
+/* Donut chart */
+.donut-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+
+/* Table */
+.table-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.table-header {
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.table-title { font-size: 14px; font-weight: 600; color: var(--cyan); }
+.search-input {
+  padding: 8px 14px;
+  background: var(--navy);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 13px;
+  font-family: 'Sarabun', sans-serif;
+  outline: none;
+  width: 220px;
+}
+.search-input:focus { border-color: var(--cyan); }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; }
+thead th {
+  background: var(--navy2);
+  padding: 11px 14px;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+}
+tbody tr { border-bottom: 1px solid rgba(30,111,255,0.08); transition: background 0.15s; }
+tbody tr:hover { background: var(--card2); }
+tbody td { padding: 11px 14px; white-space: nowrap; color: var(--text); }
+tbody td.mono { font-family: 'IBM Plex Mono', monospace; font-size: 12px; }
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-red { background: rgba(255,71,87,0.15); color: var(--red); border: 1px solid rgba(255,71,87,0.3); }
+.badge-yellow { background: rgba(255,165,2,0.15); color: var(--yellow); border: 1px solid rgba(255,165,2,0.3); }
+.badge-green { background: rgba(46,213,115,0.15); color: var(--green); border: 1px solid rgba(46,213,115,0.3); }
+.badge-blue { background: rgba(30,111,255,0.15); color: var(--blue2); border: 1px solid rgba(30,111,255,0.3); }
+.badge-gray { background: rgba(122,163,204,0.15); color: var(--muted); border: 1px solid rgba(122,163,204,0.2); }
+
+/* Loading */
+.loading {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--muted);
+}
+.loading .spinner {
+  width: 40px; height: 40px;
+  border: 3px solid var(--border);
+  border-top-color: var(--cyan);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty { text-align: center; padding: 60px 20px; color: var(--muted); font-size: 15px; }
+
+/* Pagination */
+.pagination { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; border-top: 1px solid var(--border); font-size: 13px; color: var(--muted); flex-wrap: wrap; gap: 10px; }
+.page-btns { display: flex; gap: 6px; }
+.page-btn { padding: 6px 12px; background: var(--navy); border: 1px solid var(--border); border-radius: 6px; color: var(--text); cursor: pointer; font-size: 12px; transition: all 0.15s; }
+.page-btn:hover, .page-btn.active { background: var(--blue); border-color: var(--blue); color: #fff; }
+
+/* Status bar */
+.status-bar {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 16px;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: pulse 2s infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.status-dot.loading { background: var(--yellow); }
+.status-dot.error { background: var(--red); animation: none; }
+
+@media (max-width: 768px) {
+  .header { flex-direction: column; align-items: flex-start; gap: 12px; }
+  .config-panel { flex-direction: column; }
+  .config-field { min-width: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="header-left">
+      <h1>⚡ EMS DASHBOARD</h1>
+      <p>ระบบรายงาน Pre-Hospital Report — ดึงข้อมูลจาก GitHub</p>
+    </div>
+    <div class="header-right">
+      <button class="btn btn-outline" onclick="loadData()">🔄 Refresh</button>
+      <button class="btn btn-green" onclick="exportExcel()">📊 Export Excel</button>
+      <button class="btn btn-blue" onclick="openGoogleSheet()">📋 Google Sheet</button>
+    </div>
+  </div>
+
+  <!-- Config -->
+  <div class="config-panel">
+    <div class="config-field">
+      <label>GitHub Repo (username/repo)</label>
+      <input type="text" id="cfgRepo" placeholder="udon2536/report.github.io" value="udon2536/report.github.io">
+    </div>
+    <div class="config-field">
+      <label>ไฟล์ CSV</label>
+      <input type="text" id="cfgFile" placeholder="ems_records.csv" value="ems_records.csv">
+    </div>
+    <div class="config-field">
+      <label>Branch</label>
+      <input type="text" id="cfgBranch" placeholder="main" value="main">
+    </div>
+    <button class="btn btn-cyan" onclick="loadData()">📥 Load Data</button>
+  </div>
+
+  <!-- Status -->
+  <div class="status-bar" id="statusBar">
+    <div class="status-dot loading" id="statusDot"></div>
+    <span id="statusText">กด Load Data เพื่อดึงข้อมูล</span>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats-row" id="statsRow">
+    <div class="stat-card cyan">
+      <div class="stat-label">ผู้ป่วยทั้งหมด</div>
+      <div class="stat-value" id="statTotal">—</div>
+      <div class="stat-sub">รายการในระบบ</div>
+    </div>
+    <div class="stat-card red">
+      <div class="stat-label">Code แดง</div>
+      <div class="stat-value" id="statRed">—</div>
+      <div class="stat-sub">IDC แดง</div>
+    </div>
+    <div class="stat-card yellow">
+      <div class="stat-label">Code เหลือง</div>
+      <div class="stat-value" id="statYellow">—</div>
+      <div class="stat-sub">IDC เหลือง</div>
+    </div>
+    <div class="stat-card green">
+      <div class="stat-label">Code เขียว</div>
+      <div class="stat-value" id="statGreen">—</div>
+      <div class="stat-sub">IDC เขียว</div>
+    </div>
+    <div class="stat-card blue">
+      <div class="stat-label">อายุเฉลี่ย</div>
+      <div class="stat-value" id="statAge">—</div>
+      <div class="stat-sub">ปี</div>
+    </div>
+  </div>
+
+  <!-- Charts -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <div class="chart-title">📊 IDC Code Distribution</div>
+      <div class="bar-chart" id="chartIDC">
+        <div class="empty">ยังไม่มีข้อมูล</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">🧠 AVPU Assessment</div>
+      <div class="bar-chart" id="chartAVPU">
+        <div class="empty">ยังไม่มีข้อมูล</div>
+      </div>
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">⚧ เพศ</div>
+      <div id="chartGender" style="display:flex;align-items:center;justify-content:center;height:100px">
+        <div class="empty">ยังไม่มีข้อมูล</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="table-card">
+    <div class="table-header">
+      <div class="table-title">📋 รายการผู้ป่วยทั้งหมด</div>
+      <input class="search-input" type="text" id="searchInput" placeholder="🔍 ค้นหา..." oninput="filterTable()">
+    </div>
+    <div class="table-wrap" id="tableWrap">
+      <div class="loading">
+        <div>กด Load Data เพื่อแสดงข้อมูล</div>
+      </div>
+    </div>
+    <div class="pagination" id="pagination" style="display:none">
+      <span id="pageInfo"></span>
+      <div class="page-btns" id="pageBtns"></div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+let allData = [];
+let filteredData = [];
+let currentPage = 1;
+const pageSize = 20;
+
+function setStatus(msg, state = 'ok') {
+  document.getElementById('statusText').textContent = msg;
+  const dot = document.getElementById('statusDot');
+  dot.className = 'status-dot';
+  if(state === 'loading') dot.classList.add('loading');
+  if(state === 'error') dot.classList.add('error');
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if(lines.length < 2) return [];
+  const headers = parseCSVLine(lines[0]);
+  const rows = [];
+  for(let i = 1; i < lines.length; i++) {
+    if(!lines[i].trim()) continue;
+    const values = parseCSVLine(lines[i]);
+    const obj = {};
+    headers.forEach((h, idx) => { obj[h.trim()] = (values[idx] || '').trim(); });
+    rows.push(obj);
+  }
+  return rows;
+}
+
+function parseCSVLine(line) {
+  const result = [];
+  let cur = '';
+  let inQ = false;
+  for(let i = 0; i < line.length; i++) {
+    const ch = line[i];
+    if(ch === '"' && !inQ) { inQ = true; }
+    else if(ch === '"' && inQ) {
+      if(line[i+1] === '"') { cur += '"'; i++; }
+      else { inQ = false; }
+    } else if(ch === ',' && !inQ) { result.push(cur); cur = ''; }
+    else { cur += ch; }
+  }
+  result.push(cur);
+  return result;
+}
+
+async function loadData() {
+  const repo = document.getElementById('cfgRepo').value.trim() || 'udon2536/report.github.io';
+  const file = document.getElementById('cfgFile').value.trim() || 'ems_records.csv';
+  const branch = document.getElementById('cfgBranch').value.trim() || 'main';
+
+  setStatus('กำลังดึงข้อมูลจาก GitHub...', 'loading');
+  document.getElementById('tableWrap').innerHTML = '<div class="loading"><div class="spinner"></div><div>กำลังโหลด...</div></div>';
+
+  try {
+    const url = `https://raw.githubusercontent.com/${repo}/${branch}/${file}?t=${Date.now()}`;
+    const res = await fetch(url);
+    if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    allData = parseCSV(text);
+    filteredData = [...allData];
+    currentPage = 1;
+
+    updateStats();
+    updateCharts();
+    renderTable();
+    setStatus(`โหลดสำเร็จ — ${allData.length} รายการ | อัปเดตล่าสุด: ${new Date().toLocaleTimeString('th-TH')}`);
+  } catch(e) {
+    setStatus('เกิดข้อผิดพลาด: ' + e.message, 'error');
+    document.getElementById('tableWrap').innerHTML = `<div class="empty">❌ ไม่สามารถโหลดข้อมูลได้<br><small style="color:#7aa3cc">${e.message}</small></div>`;
+  }
+}
+
+function updateStats() {
+  document.getElementById('statTotal').textContent = allData.length;
+  const red = allData.filter(r => r['IDC'] === 'แดง' || r['IDC'] === 'แดง').length;
+  const yellow = allData.filter(r => r['IDC'] === 'เหลือง').length;
+  const green = allData.filter(r => r['IDC'] === 'เขียว').length;
+  document.getElementById('statRed').textContent = red;
+  document.getElementById('statYellow').textContent = yellow;
+  document.getElementById('statGreen').textContent = green;
+
+  const ages = allData.map(r => parseFloat(r['Age'])).filter(a => !isNaN(a) && a > 0);
+  const avgAge = ages.length ? (ages.reduce((a,b)=>a+b,0)/ages.length).toFixed(1) : '—';
+  document.getElementById('statAge').textContent = avgAge;
+}
+
+function updateCharts() {
+  // IDC Chart
+  const idcCounts = {};
+  allData.forEach(r => {
+    const v = r['IDC'] || 'ไม่ระบุ';
+    idcCounts[v] = (idcCounts[v]||0) + 1;
+  });
+  const idcColors = { 'แดง': '#ff4757', 'เหลือง': '#ffa502', 'เขียว': '#2ed573', 'ไม่ระบุ': '#7aa3cc' };
+  const maxIDC = Math.max(...Object.values(idcCounts), 1);
+  document.getElementById('chartIDC').innerHTML = Object.entries(idcCounts).map(([k,v]) => `
+    <div class="bar-item">
+      <div class="bar-label">${k}</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${v/maxIDC*100}%;background:${idcColors[k]||'#4d94ff'}">${v}</div></div>
+      <div class="bar-count">${v}</div>
+    </div>
+  `).join('') || '<div class="empty">ไม่มีข้อมูล</div>';
+
+  // AVPU Chart
+  const avpuCounts = {};
+  allData.forEach(r => {
+    const v = r['AVPU'] || 'ไม่ระบุ';
+    avpuCounts[v] = (avpuCounts[v]||0) + 1;
+  });
+  const avpuColors = { 'Alert': '#2ed573', 'Voice': '#4d94ff', 'Pain': '#ffa502', 'Unresponsive': '#ff4757', 'ไม่ระบุ': '#7aa3cc' };
+  const maxAVPU = Math.max(...Object.values(avpuCounts), 1);
+  document.getElementById('chartAVPU').innerHTML = Object.entries(avpuCounts).map(([k,v]) => `
+    <div class="bar-item">
+      <div class="bar-label">${k}</div>
+      <div class="bar-wrap"><div class="bar-fill" style="width:${v/maxAVPU*100}%;background:${avpuColors[k]||'#4d94ff'}">${v}</div></div>
+      <div class="bar-count">${v}</div>
+    </div>
+  `).join('') || '<div class="empty">ไม่มีข้อมูล</div>';
+
+  // Gender
+  const male = allData.filter(r => r['Gender'] === 'ชาย').length;
+  const female = allData.filter(r => r['Gender'] === 'หญิง').length;
+  const total = male + female || 1;
+  document.getElementById('chartGender').innerHTML = `
+    <div style="display:flex;flex-direction:column;align-items:center;gap:10px;width:100%">
+      <div style="display:flex;width:100%;height:28px;border-radius:14px;overflow:hidden">
+        <div style="width:${male/total*100}%;background:#4d94ff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff">${male}</div>
+        <div style="width:${female/total*100}%;background:#ff6b9d;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff">${female}</div>
+      </div>
+      <div style="display:flex;gap:20px;font-size:13px">
+        <span><span style="color:#4d94ff">♂</span> ชาย ${male} คน (${(male/total*100).toFixed(0)}%)</span>
+        <span><span style="color:#ff6b9d">♀</span> หญิง ${female} คน (${(female/total*100).toFixed(0)}%)</span>
+      </div>
+    </div>
+  `;
+}
+
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  filteredData = allData.filter(r =>
+    Object.values(r).some(v => v.toLowerCase().includes(q))
+  );
+  currentPage = 1;
+  renderTable();
+}
+
+function idcBadge(val) {
+  if(val === 'แดง') return `<span class="badge badge-red">🔴 แดง</span>`;
+  if(val === 'เหลือง') return `<span class="badge badge-yellow">🟡 เหลือง</span>`;
+  if(val === 'เขียว') return `<span class="badge badge-green">🟢 เขียว</span>`;
+  return `<span class="badge badge-gray">${val||'—'}</span>`;
+}
+function avpuBadge(val) {
+  const c = {Alert:'badge-green', Voice:'badge-blue', Pain:'badge-yellow', Unresponsive:'badge-red'};
+  return `<span class="badge ${c[val]||'badge-gray'}">${val||'—'}</span>`;
+}
+
+function renderTable() {
+  const start = (currentPage-1)*pageSize;
+  const end = start+pageSize;
+  const pageData = filteredData.slice(start, end);
+
+  if(filteredData.length === 0) {
+    document.getElementById('tableWrap').innerHTML = '<div class="empty">ไม่พบข้อมูล</div>';
+    document.getElementById('pagination').style.display = 'none';
+    return;
+  }
+
+  const html = `
+    <table>
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>วันที่</th>
+          <th>เวลา</th>
+          <th>IDC</th>
+          <th>RC</th>
+          <th>เพศ</th>
+          <th>อายุ</th>
+          <th>น้ำหนัก</th>
+          <th>AVPU</th>
+          <th>GCS</th>
+          <th>BP</th>
+          <th>HR</th>
+          <th>SpO2</th>
+          <th>ผู้บันทึก</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${pageData.map((r,i) => {
+          const gcs = [r['GCS_E'],r['GCS_V'],r['GCS_M']].filter(Boolean).join('/');
+          // Try to parse vital signs JSON
+          let bp = '—', hr = '—', spo2 = '—';
+          try {
+            const vs = JSON.parse(r['Vital_Signs'].replace(/""/g,'"'));
+            if(vs && vs[0]) { bp = vs[0].bp||'—'; hr = vs[0].hr||'—'; spo2 = vs[0].spo2||'—'; }
+          } catch(e) {
+            bp = r['BP'] || '—';
+            hr = r['HR'] || '—';
+            spo2 = r['SpO2'] || r['SpO2%'] || '—';
+          }
+          return `
+          <tr>
+            <td class="mono" style="color:var(--muted)">${start+i+1}</td>
+            <td class="mono">${r['Date']||'—'}</td>
+            <td class="mono">${r['Time']||'—'}</td>
+            <td>${idcBadge(r['IDC'])}</td>
+            <td>${idcBadge(r['RC'])}</td>
+            <td>${r['Gender']||'—'}</td>
+            <td class="mono">${r['Age']||'—'}</td>
+            <td class="mono">${r['Weight']||'—'}</td>
+            <td>${avpuBadge(r['AVPU'])}</td>
+            <td class="mono" style="color:var(--cyan)">${gcs||'—'}</td>
+            <td class="mono">${bp}</td>
+            <td class="mono">${hr}</td>
+            <td class="mono">${spo2}%</td>
+            <td style="color:var(--muted)">${r['Recorder']||r['ผู้บันทึก']||'—'}</td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+  `;
+  document.getElementById('tableWrap').innerHTML = html;
+
+  // Pagination
+  const totalPages = Math.ceil(filteredData.length/pageSize);
+  document.getElementById('pageInfo').textContent = `แสดง ${start+1}–${Math.min(end, filteredData.length)} จาก ${filteredData.length} รายการ`;
+  document.getElementById('pagination').style.display = 'flex';
+
+  let pageBtns = '';
+  for(let p=1; p<=totalPages; p++) {
+    pageBtns += `<button class="page-btn ${p===currentPage?'active':''}" onclick="goPage(${p})">${p}</button>`;
+  }
+  document.getElementById('pageBtns').innerHTML = pageBtns;
+}
+
+function goPage(p) {
+  currentPage = p;
+  renderTable();
+  document.getElementById('tableWrap').scrollIntoView({behavior:'smooth'});
+}
+
+function exportExcel() {
+  if(!allData.length) { alert('กรุณา Load Data ก่อน'); return; }
+
+  const headers = ['วันที่','เวลา','IDC','RC','เพศ','อายุ','น้ำหนัก','MOI','AVPU',
+    'Exsanguination','Airway','Airway_Other','Breathing_Sound','Resp_Distress','Bleeding',
+    'Capillary_Refill','Tissue_Color','Skin_Temp','GCS_E','GCS_V','GCS_M',
+    'Pupil_R','RTL_R','Pupil_L','RTL_L','MP_RU','MP_LU','MP_RL','MP_LL',
+    'Vital_Signs','Recorder','Timestamp'];
+
+  const rows = allData.map(r => [
+    r['Date'], r['Time'], r['IDC'], r['RC'], r['Gender'], r['Age'], r['Weight'], r['MOI'],
+    r['AVPU'], r['Exsanguination'], r['Airway'], r['Airway_Other']||r['Airway_อื่นๆ'],
+    r['Breathing_Sound'], r['Respiratory_Distress']||r['Resp_Distress'], r['Bleeding'],
+    r['Capillary_Refill'], r['Tissue_Color'], r['Skin_Temp'],
+    r['GCS_E'], r['GCS_V'], r['GCS_M'],
+    r['Pupil_R'], r['RTL_R'], r['Pupil_L'], r['RTL_L'],
+    r['MP_Rt_Upper']||r['MP_RU'], r['MP_Lt_Upper']||r['MP_LU'],
+    r['MP_Rt_Lower']||r['MP_RL'], r['MP_Lt_Lower']||r['MP_LL'],
+    r['Vital_Signs'], r['Recorder']||r['ผู้บันทึก'], r['Timestamp']
+  ]);
+
+  const ws = XLSX.utils.aoa_to_sheet([headers, ...rows]);
+
+  // Style header row
+  ws['!cols'] = headers.map((h,i) => ({wch: Math.max(h.length, 12)}));
+
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'EMS Records');
+
+  // Stats sheet
+  const statsData = [
+    ['สรุปสถิติ EMS'],
+    [''],
+    ['ผู้ป่วยทั้งหมด', allData.length],
+    ['IDC แดง', allData.filter(r=>r['IDC']==='แดง').length],
+    ['IDC เหลือง', allData.filter(r=>r['IDC']==='เหลือง').length],
+    ['IDC เขียว', allData.filter(r=>r['IDC']==='เขียว').length],
+    [''],
+    ['เพศชาย', allData.filter(r=>r['Gender']==='ชาย').length],
+    ['เพศหญิง', allData.filter(r=>r['Gender']==='หญิง').length],
+    [''],
+    ['AVPU - Alert', allData.filter(r=>r['AVPU']==='Alert').length],
+    ['AVPU - Voice', allData.filter(r=>r['AVPU']==='Voice').length],
+    ['AVPU - Pain', allData.filter(r=>r['AVPU']==='Pain').length],
+    ['AVPU - Unresponsive', allData.filter(r=>r['AVPU']==='Unresponsive').length],
+    [''],
+    ['Export เมื่อ', new Date().toLocaleString('th-TH')],
+  ];
+  const ws2 = XLSX.utils.aoa_to_sheet(statsData);
+  ws2['!cols'] = [{wch:25},{wch:15}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'สรุปสถิติ');
+
+  const date = new Date().toISOString().split('T')[0];
+  XLSX.writeFile(wb, `EMS_Report_${date}.xlsx`);
+}
+
+function openGoogleSheet() {
+  const repo = document.getElementById('cfgRepo').value.trim() || 'udon2536/report.github.io';
+  const file = document.getElementById('cfgFile').value.trim() || 'ems_records.csv';
+  const branch = document.getElementById('cfgBranch').value.trim() || 'main';
+  const rawUrl = `https://raw.githubusercontent.com/${repo}/${branch}/${file}`;
+  const encoded = encodeURIComponent(rawUrl);
+
+  // Google Sheet IMPORTDATA formula instruction
+  const msg = `วิธีเชื่อม Google Sheet:\n\n1. เปิด Google Sheet ใหม่\n2. คลิก Cell A1\n3. พิมพ์สูตรนี้:\n\n=IMPORTDATA("${rawUrl}")\n\n4. กด Enter\n\nข้อมูลจะ Sync อัตโนมัติทุก 1 ชั่วโมง`;
+  if(confirm(msg + '\n\nต้องการเปิด Google Sheet ใหม่หรือไม่?')) {
+    window.open('https://docs.google.com/spreadsheets/create', '_blank');
+  }
+}
+
+// Load on startup if saved
+window.onload = () => {
+  setStatus('พร้อมใช้งาน — กด Load Data เพื่อดึงข้อมูล');
+};
+</script>
+</body>
+</html>
