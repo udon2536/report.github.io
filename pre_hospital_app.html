@@ -14,9 +14,10 @@
 :root {
   --blue-dark:#1e3a5f;--blue:#2563eb;--blue-mid:#1d4ed8;--blue-light:#dbeafe;
   --red:#dc2626;--red-light:#fee2e2;--yellow:#d97706;--yellow-light:#fef3c7;
-  --green:#16a34a;--green-light:#dcfce7;--gray-50:#f8fafc;--gray-100:#f1f5f9;
-  --gray-200:#e2e8f0;--gray-300:#cbd5e1;--gray-400:#94a3b8;--gray-500:#64748b;
-  --gray-600:#475569;--gray-700:#334155;--gray-900:#0f172a;
+  --green:#16a34a;--green-light:#dcfce7;
+  --black:#1a1a1a;--black-light:#e5e5e5;
+  --gray-50:#f8fafc;--gray-100:#f1f5f9;--gray-200:#e2e8f0;--gray-300:#cbd5e1;
+  --gray-400:#94a3b8;--gray-500:#64748b;--gray-600:#475569;--gray-700:#334155;--gray-900:#0f172a;
   --radius:12px;--radius-sm:8px;
   --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);
 }
@@ -50,6 +51,9 @@ textarea{resize:none;line-height:1.5}
 .radio-pill.red input:checked+label{border-color:var(--red);background:var(--red-light);color:var(--red)}
 .radio-pill.yellow input:checked+label{border-color:var(--yellow);background:var(--yellow-light);color:var(--yellow)}
 .radio-pill.green input:checked+label{border-color:var(--green);background:var(--green-light);color:var(--green)}
+/* ===== สีดำสำหรับ RC ===== */
+.radio-pill.black input:checked+label{border-color:var(--black);background:var(--black-light);color:var(--black);font-weight:700}
+
 .check-item{display:flex;align-items:center;gap:0}
 .check-item input[type="checkbox"]{display:none}
 .check-item label{padding:7px 13px;border-radius:8px;border:1.5px solid var(--gray-200);font-size:13px;cursor:pointer;transition:all 0.15s;background:#fff;color:var(--gray-700)}
@@ -108,7 +112,7 @@ textarea{resize:none;line-height:1.5}
   <div id="topbar">
     <div>
       <h1>EMS Pre-Hospital</h1>
-      <div class="subtitle">Patient Report v2.4</div>
+      <div class="subtitle">v1.0 Demo</div>
     </div>
     <div class="topbar-right">
       <div class="date-badge" id="date-badge"></div>
@@ -123,6 +127,8 @@ textarea{resize:none;line-height:1.5}
   </div>
 
   <div id="content">
+
+    <!-- TAB 0: TRIAGE -->
     <div class="section active" id="sec0">
       <div class="card">
         <div class="card-header"><span class="icon">📋</span>Incident Details</div>
@@ -145,10 +151,12 @@ textarea{resize:none;line-height:1.5}
               <div class="radio-pill red"><input type="radio" name="rc" id="rc-r" value="แดง"><label for="rc-r">🔴 แดง</label></div>
               <div class="radio-pill yellow"><input type="radio" name="rc" id="rc-y" value="เหลือง"><label for="rc-y">🟡 เหลือง</label></div>
               <div class="radio-pill green"><input type="radio" name="rc" id="rc-g" value="เขียว"><label for="rc-g">🟢 เขียว</label></div>
+              <div class="radio-pill black"><input type="radio" name="rc" id="rc-b" value="ดำ"><label for="rc-b">⬛ ดำ</label></div>
             </div>
           </div>
         </div>
       </div>
+
       <div class="card">
         <div class="card-header"><span class="icon">👤</span>ข้อมูลผู้ป่วย</div>
         <div class="card-body">
@@ -171,9 +179,10 @@ textarea{resize:none;line-height:1.5}
       </div>
     </div>
 
+    <!-- TAB 1: ASSESSMENT -->
     <div class="section" id="sec1">
       <div class="card">
-        <div class="card-header"><span class="icon">📊</span>ABCDE Assessment</div>
+        <div class="card-header"><span class="icon">🔍</span>ABCDE Assessment</div>
         <div class="card-body">
           <div class="field">
             <label class="lbl">Assess Response (AVPU)</label>
@@ -184,10 +193,14 @@ textarea{resize:none;line-height:1.5}
               <div class="radio-pill"><input type="radio" name="avpu" id="av-u" value="Unresponsive"><label for="av-u">U — Unresponsive</label></div>
             </div>
           </div>
+
           <div class="field">
             <label class="lbl">X — Exsanguination</label>
-            <div class="check-group"><div class="check-item"><input type="checkbox" id="exs"><label for="exs">มีตกเลือดรุนแรง และได้รับการห้ามเลือดแล้ว</label></div></div>
+            <div class="check-group">
+              <div class="check-item"><input type="checkbox" id="exs"><label for="exs">มีตกเลือดรุนแรง และได้รับการห้ามเลือดแล้ว</label></div>
+            </div>
           </div>
+
           <div class="field">
             <label class="lbl">A — Airway</label>
             <div class="check-group">
@@ -198,6 +211,7 @@ textarea{resize:none;line-height:1.5}
             </div>
             <input type="text" id="aw-other" placeholder="Airway อื่นๆ" style="margin-top:8px">
           </div>
+
           <div class="field">
             <label class="lbl">B — Breathing</label>
             <div class="sub-header">Breathing Sound</div>
@@ -218,6 +232,7 @@ textarea{resize:none;line-height:1.5}
             </div>
             <input type="text" id="rd-other" placeholder="Breathing อื่นๆ" style="margin-top:8px">
           </div>
+
           <div class="field">
             <label class="lbl">C — Circulation</label>
             <div class="sub-header">Bleeding</div>
@@ -242,6 +257,7 @@ textarea{resize:none;line-height:1.5}
               <div class="radio-pill"><input type="radio" name="temp" id="tmp-cold" value="Cold"><label for="tmp-cold">Cold</label></div>
             </div>
           </div>
+
           <div class="field">
             <label class="lbl">D — Disability (Neuro)</label>
             <div class="sub-header">GCS Score</div>
@@ -275,6 +291,7 @@ textarea{resize:none;line-height:1.5}
       </div>
     </div>
 
+    <!-- TAB 2: VITAL SIGNS -->
     <div class="section" id="sec2">
       <div class="card">
         <div class="card-header"><span class="icon">📊</span>Vital Signs</div>
@@ -288,6 +305,7 @@ textarea{resize:none;line-height:1.5}
       </div>
     </div>
 
+    <!-- TAB 3: TREATMENT -->
     <div class="section" id="sec3">
       <div class="card">
         <div class="card-header"><span class="icon">💊</span>Management &amp; Treatment</div>
@@ -306,7 +324,8 @@ textarea{resize:none;line-height:1.5}
         </div>
       </div>
     </div>
-  </div>
+
+  </div><!-- end #content -->
 
   <div id="action-bar">
     <button class="btn-secondary" onclick="showSetupModal()">⚙️ Setup</button>
@@ -314,6 +333,7 @@ textarea{resize:none;line-height:1.5}
   </div>
 </div>
 
+<!-- Setup Modal -->
 <div class="setup-modal" id="setupModal">
   <div class="modal-content">
     <h2>GitHub Token Setup</h2>
@@ -333,9 +353,7 @@ textarea{resize:none;line-height:1.5}
 <div id="toast"></div>
 
 <script>
-// ============================================================
-// FIX 1: UTF-8 safe encode/decode (แก้ภาษาไทยเสีย)
-// ============================================================
+// ── UTF-8 safe encode/decode ──────────────────────────────
 function utf8ToBase64(str) {
   const bytes = new TextEncoder().encode(str);
   let bin = '';
@@ -348,13 +366,12 @@ function base64ToUtf8(b64) {
   for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
   return new TextDecoder('utf-8').decode(bytes);
 }
-
-// FIX 2: CSV field — ห่อ quotes + escape
+// ── CSV field helper ──────────────────────────────────────
 function cf(val) {
-  return '"' + String(val === null || val === undefined ? '' : val).replace(/"/g, '""') + '"';
+  return '"' + String(val ?? '').replace(/"/g, '""') + '"';
 }
 
-// ============================================================
+// ── Init ──────────────────────────────────────────────────
 const now = new Date();
 document.getElementById('date-badge').textContent = now.toLocaleDateString('th-TH',{day:'2-digit',month:'short',year:'2-digit'});
 document.getElementById('inc-date').value = now.toISOString().split('T')[0];
@@ -426,9 +443,7 @@ function getR(n){const c=document.querySelector('input[name="'+n+'"]:checked');r
 function getC(ids){return ids.filter(id=>document.getElementById(id)?.checked).map(id=>(document.querySelector('label[for="'+id+'"]')?.textContent||'').trim()).join(', ');}
 function getV(id){return(document.getElementById(id)?.value||'').trim();}
 
-// ============================================================
-// SAVE TO GITHUB — แก้ครบ 3 จุด
-// ============================================================
+// ── Save to GitHub ────────────────────────────────────────
 async function saveToGithub() {
   const token  = localStorage.getItem('githubToken');
   const repo   = localStorage.getItem('repoName');
@@ -437,75 +452,48 @@ async function saveToGithub() {
 
   showToast('⏳ กำลังบันทึก...');
   try {
-    // Vital Signs rows
     const vsRows = [];
     document.querySelectorAll('#vs-body tr').forEach(row=>{
       const inp=row.querySelectorAll('input');
       if(inp.length>=6) vsRows.push({time:inp[0].value,bp:inp[1].value,hr:inp[2].value,rr:inp[3].value,spo2:inp[4].value,dtx:inp[5].value});
     });
-
-    // Treatment rows
     const txRows = [];
     document.querySelectorAll('.treatment-row').forEach(row=>{
       const inp=row.querySelectorAll('input');
       if(inp.length>=2) txRows.push({time:inp[0].value,treatment:inp[1].value});
     });
 
-    // FIX 3: Vital Signs เป็น flat text ไม่ใช่ JSON
     const vsSummary = vsRows.filter(v=>v.bp||v.hr).map(v=>
       '['+[v.time||'--:--','BP:'+(v.bp||'-'),'HR:'+(v.hr||'-'),'RR:'+(v.rr||'-'),'SpO2:'+(v.spo2||'-')+'%','DTX:'+(v.dtx||'-')].join(' ')+']'
     ).join(' | ');
-
     const txSummary = txRows.filter(t=>t.treatment).map(t=>
-      '['+[t.time||'--:--',t.treatment].join(' ')+']'
+      '['+(t.time||'--:--')+' '+t.treatment+']'
     ).join(' | ');
 
-    // Build one CSV row — 40 columns, ไม่มี JSON ในเลย
     const row40 = [
-      new Date().toISOString(),           // 1  Timestamp
-      getV('inc-date'),                   // 2  Date
-      getV('inc-time'),                   // 3  Time
-      getR('idc'),                        // 4  IDC
-      getR('rc'),                         // 5  RC
-      getR('gender'),                     // 6  Gender
-      getV('age'),                        // 7  Age
-      getV('weight'),                     // 8  Weight
-      getV('moi'),                        // 9  MOI
-      getR('avpu'),                       // 10 AVPU
-      document.getElementById('exs').checked?'Yes':'No', // 11 Exsanguination
-      getC(['aw-clear','aw-sec','aw-stri','aw-fb']),      // 12 Airway
-      getV('aw-other'),                   // 13 Airway_Other
-      getC(['bs-clear','bs-wheeze','bs-crep','bs-dec','bs-hunger','bs-apnea']), // 14 Breathing_Sound
-      getC(['rd-dysp','rd-tachy','rd-trachea','rd-poor']),// 15 Resp_Distress
-      getV('rd-other'),                   // 16 Breathing_Other
-      getC(['bl-ext','bl-int']),          // 17 Bleeding
-      getR('cap'),                        // 18 Cap_Refill
-      getC(['tc-nor','tc-pale','tc-cyan']),// 19 Tissue_Color
-      getR('temp'),                       // 20 Skin_Temp
-      getV('gcs-e'),                      // 21 GCS_E
-      getV('gcs-v'),                      // 22 GCS_V
-      getV('gcs-m'),                      // 23 GCS_M
-      getV('pup-rt'),                     // 24 Pupil_R
-      document.getElementById('rtl-rt').checked?'RTL+':'', // 25 RTL_R
-      getV('pup-lt'),                     // 26 Pupil_L
-      document.getElementById('rtl-lt').checked?'RTL+':'', // 27 RTL_L
-      getV('mp-ru'),                      // 28 MP_Rt_Upper
-      getV('mp-lu'),                      // 29 MP_Lt_Upper
-      getV('mp-rl'),                      // 30 MP_Rt_Lower
-      getV('mp-ll'),                      // 31 MP_Lt_Lower
-      vsRows[0]?vsRows[0].time:'',        // 32 VS1_Time
-      vsRows[0]?vsRows[0].bp:'',          // 33 VS1_BP
-      vsRows[0]?vsRows[0].hr:'',          // 34 VS1_HR
-      vsRows[0]?vsRows[0].rr:'',          // 35 VS1_RR
-      vsRows[0]?vsRows[0].spo2:'',        // 36 VS1_SpO2
-      vsRows[0]?vsRows[0].dtx:'',         // 37 VS1_DTX
-      vsSummary,                          // 38 VS_All (flat text)
-      txSummary,                          // 39 TX_All (flat text)
-      getV('recorder'),                   // 40 Recorder
+      new Date().toISOString(),
+      getV('inc-date'), getV('inc-time'),
+      getR('idc'), getR('rc'),
+      getR('gender'), getV('age'), getV('weight'), getV('moi'),
+      getR('avpu'),
+      document.getElementById('exs').checked?'Yes':'No',
+      getC(['aw-clear','aw-sec','aw-stri','aw-fb']), getV('aw-other'),
+      getC(['bs-clear','bs-wheeze','bs-crep','bs-dec','bs-hunger','bs-apnea']),
+      getC(['rd-dysp','rd-tachy','rd-trachea','rd-poor']), getV('rd-other'),
+      getC(['bl-ext','bl-int']), getR('cap'),
+      getC(['tc-nor','tc-pale','tc-cyan']), getR('temp'),
+      getV('gcs-e'), getV('gcs-v'), getV('gcs-m'),
+      getV('pup-rt'), document.getElementById('rtl-rt').checked?'RTL+':'',
+      getV('pup-lt'), document.getElementById('rtl-lt').checked?'RTL+':'',
+      getV('mp-ru'), getV('mp-lu'), getV('mp-rl'), getV('mp-ll'),
+      vsRows[0]?vsRows[0].time:'', vsRows[0]?vsRows[0].bp:'',
+      vsRows[0]?vsRows[0].hr:'',  vsRows[0]?vsRows[0].rr:'',
+      vsRows[0]?vsRows[0].spo2:'',vsRows[0]?vsRows[0].dtx:'',
+      vsSummary, txSummary,
+      getV('recorder'),
     ];
 
     const csvLine = row40.map(cf).join(',') + '\n';
-
     const HEADER =
       '"Timestamp","Date","Time","IDC","RC","Gender","Age","Weight","MOI","AVPU",'+
       '"Exsanguination","Airway","Airway_Other","Breathing_Sound","Resp_Distress","Breathing_Other",'+
@@ -524,20 +512,17 @@ async function saveToGithub() {
       if(res.ok){
         const fd = await res.json();
         sha = fd.sha;
-        // FIX 1: อ่าน CSV กลับมาด้วย TextDecoder — ภาษาไทยถูกต้อง
-        const existing = base64ToUtf8(fd.content);
-        content = existing + csvLine;
+        content = base64ToUtf8(fd.content) + csvLine;
       }
-    } catch(e){/* ไฟล์ยังไม่มี */}
+    } catch(e){}
 
-    // FIX 1: เขียน CSV ด้วย TextEncoder — ภาษาไทยถูกต้อง
     const up = await fetch(apiUrl,{
       method:'PUT',
       headers:{'Authorization':'token '+token,'Content-Type':'application/json'},
       body:JSON.stringify({
         message:'EMS Record '+new Date().toISOString(),
         content:utf8ToBase64(content),
-        branch:branch,
+        branch,
         ...(sha&&{sha})
       })
     });
