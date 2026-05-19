@@ -383,38 +383,96 @@ function renderTable(){
   const s=(pg-1)*PER, e=s+PER, rows=fil.slice(s,e);
   document.getElementById('tw').innerHTML=`
     <table>
-      <thead><tr>
-        <th>#</th>
-        <th>วันที่</th><th>เวลา</th>
-        <th>IDC</th><th>RC</th>
-        <th>เพศ</th><th>อายุ</th><th>น้ำหนัก</th>
-        <th>MOI</th><th>AVPU</th>
-        <th>GCS</th>
-        <th class="th-vs" style="min-width:240px">📊 Vital Signs</th>
-        <th class="th-tx" style="min-width:200px">💊 Treatment</th>
-        <th>ผู้บันทึก</th>
-        <th></th>
-      </tr></thead>
+      <thead>
+        <!-- Row 1: Group headers -->
+        <tr style="border-bottom:none">
+          <th rowspan="2" style="background:#061525;border-right:1px solid var(--border)">#</th>
+          <!-- Incident Details -->
+          <th colspan="4" style="background:#0d1f3a;color:#60a5fa;text-align:center;border-right:1px solid var(--border);font-size:10px;padding:5px 8px;letter-spacing:0.5px">📋 INCIDENT DETAILS</th>
+          <!-- ข้อมูลผู้ป่วย -->
+          <th colspan="4" style="background:#0d2a1a;color:#4ade80;text-align:center;border-right:1px solid var(--border);font-size:10px;padding:5px 8px;letter-spacing:0.5px">👤 ข้อมูลผู้ป่วย</th>
+          <!-- ABCDE Assessment -->
+          <th colspan="7" style="background:#1a1a0d;color:#facc15;text-align:center;border-right:1px solid var(--border);font-size:10px;padding:5px 8px;letter-spacing:0.5px">🔍 ABCDE ASSESSMENT</th>
+          <!-- Vital Signs -->
+          <th colspan="1" style="background:#0a2030;color:#00d4ff;text-align:center;border-right:1px solid var(--border);font-size:10px;padding:5px 8px;letter-spacing:0.5px">📊 VITAL SIGNS</th>
+          <!-- Treatment -->
+          <th colspan="1" style="background:#0f2010;color:#2ed573;text-align:center;border-right:1px solid var(--border);font-size:10px;padding:5px 8px;letter-spacing:0.5px">💊 TREATMENT</th>
+          <!-- Recorder -->
+          <th rowspan="2" style="background:#061525;color:var(--muted);font-size:10px;white-space:nowrap">ผู้บันทึก</th>
+          <th rowspan="2" style="background:#061525;width:40px"></th>
+        </tr>
+        <!-- Row 2: Column headers -->
+        <tr>
+          <!-- Incident Details -->
+          <th style="background:#0d1f3a;color:#93c5fd">วันที่</th>
+          <th style="background:#0d1f3a;color:#93c5fd">เวลา</th>
+          <th style="background:#0d1f3a;color:#93c5fd">IDC</th>
+          <th style="background:#0d1f3a;color:#93c5fd;border-right:1px solid var(--border)">RC</th>
+          <!-- ข้อมูลผู้ป่วย -->
+          <th style="background:#0d2a1a;color:#86efac">เพศ</th>
+          <th style="background:#0d2a1a;color:#86efac">อายุ</th>
+          <th style="background:#0d2a1a;color:#86efac">น้ำหนัก</th>
+          <th style="background:#0d2a1a;color:#86efac;border-right:1px solid var(--border);max-width:130px">MOI/NOI</th>
+          <!-- ABCDE Assessment -->
+          <th style="background:#1a1a0d;color:#fde68a">AVPU</th>
+          <th style="background:#1a1a0d;color:#fde68a">Exsang.</th>
+          <th style="background:#1a1a0d;color:#fde68a">Airway</th>
+          <th style="background:#1a1a0d;color:#fde68a">Breathing</th>
+          <th style="background:#1a1a0d;color:#fde68a">Circulation</th>
+          <th style="background:#1a1a0d;color:#fde68a">GCS</th>
+          <th style="background:#1a1a0d;color:#fde68a;border-right:1px solid var(--border)">Pupil</th>
+          <!-- Vital Signs -->
+          <th style="background:#0a2030;color:#67e8f9;min-width:240px;border-right:1px solid var(--border)">BP / HR / RR / SpO₂ / DTX</th>
+          <!-- Treatment -->
+          <th style="background:#0f2010;color:#6ee7b7;min-width:200px;border-right:1px solid var(--border)">รายการ Treatment</th>
+        </tr>
+      </thead>
       <tbody>
       ${rows.map((r,i)=>{
         const gcs=[r['GCS_E'],r['GCS_V'],r['GCS_M']].filter(Boolean).join('/')||'—';
-        const moi=(r['MOI']||'').substring(0,25)+((r['MOI']||'').length>25?'…':'');
+        const moi=(r['MOI']||'').substring(0,20)+((r['MOI']||'').length>20?'…':'');
         const rec=r['Recorder']||r['ผู้บันทึก']||'—';
         const idx=all.indexOf(r);
+
+        // Airway summary
+        const airway=[r['Airway'],r['Airway_Other']].filter(Boolean).join(' / ')||'—';
+        const airwayShort=airway.substring(0,18)+(airway.length>18?'…':'');
+
+        // Breathing summary
+        const breathing=[r['Breathing_Sound'],r['Resp_Distress'],r['Breathing_Other']].filter(Boolean).join(' / ')||'—';
+        const breathingShort=breathing.substring(0,18)+(breathing.length>18?'…':'');
+
+        // Circulation summary
+        const circ=[r['Bleeding'],r['Cap_Refill']||r['Capillary_Refill'],r['Tissue_Color'],r['Skin_Temp']].filter(Boolean).join(' / ')||'—';
+        const circShort=circ.substring(0,18)+(circ.length>18?'…':'');
+
+        // Pupil
+        const pupil=[(r['Pupil_R']?r['Pupil_R']+'mm':''),r['RTL_R'],(r['Pupil_L']?r['Pupil_L']+'mm':''),r['RTL_L']].filter(Boolean).join(' ')||'—';
+
+        // Exsanguination
+        const exs=r['Exsanguination']==='Yes'
+          ? '<span style="color:#ff4757;font-size:10px;font-weight:700">⚠️ YES</span>'
+          : '<span style="color:var(--muted);font-size:10px">No</span>';
+
         return `<tr>
-          <td class="mo" style="color:var(--muted)">${s+i+1}</td>
-          <td class="mo">${r['Date']||'—'}</td>
-          <td class="mo">${r['Time']||'—'}</td>
-          <td>${bdg(r['IDC'])}</td>
-          <td>${bdg(r['RC'])}</td>
-          <td>${r['Gender']||'—'}</td>
-          <td class="mo">${r['Age']||'—'}</td>
-          <td class="mo">${r['Weight']||'—'}</td>
-          <td style="max-width:120px;overflow:hidden;text-overflow:ellipsis;color:var(--muted);font-size:11px" title="${r['MOI']||''}">${moi||'—'}</td>
-          <td>${bdg(r['AVPU'])}</td>
-          <td class="mo" style="color:var(--cyan)">${gcs}</td>
-          <td class="col-group-vs">${renderVSTags(r)}</td>
-          <td class="col-group-tx">${renderTXList(r)}</td>
+          <td class="mo" style="color:var(--muted);border-right:1px solid var(--border)">${s+i+1}</td>
+          <td class="mo" style="background:rgba(13,31,58,0.3)">${r['Date']||'—'}</td>
+          <td class="mo" style="background:rgba(13,31,58,0.3)">${r['Time']||'—'}</td>
+          <td style="background:rgba(13,31,58,0.3)">${bdg(r['IDC'])}</td>
+          <td style="background:rgba(13,31,58,0.3);border-right:1px solid var(--border)">${bdg(r['RC'])}</td>
+          <td style="background:rgba(13,42,26,0.3)">${r['Gender']||'—'}</td>
+          <td class="mo" style="background:rgba(13,42,26,0.3)">${r['Age']||'—'}</td>
+          <td class="mo" style="background:rgba(13,42,26,0.3)">${r['Weight']||'—'}</td>
+          <td style="background:rgba(13,42,26,0.3);max-width:130px;overflow:hidden;text-overflow:ellipsis;color:#86efac;font-size:11px;border-right:1px solid var(--border)" title="${r['MOI']||''}">${moi||'—'}</td>
+          <td style="background:rgba(26,26,13,0.3)">${bdg(r['AVPU'])}</td>
+          <td style="background:rgba(26,26,13,0.3);text-align:center">${exs}</td>
+          <td style="background:rgba(26,26,13,0.3);font-size:10px;color:#fde68a;max-width:100px;overflow:hidden;text-overflow:ellipsis" title="${airway}">${airwayShort}</td>
+          <td style="background:rgba(26,26,13,0.3);font-size:10px;color:#fde68a;max-width:100px;overflow:hidden;text-overflow:ellipsis" title="${breathing}">${breathingShort}</td>
+          <td style="background:rgba(26,26,13,0.3);font-size:10px;color:#fde68a;max-width:100px;overflow:hidden;text-overflow:ellipsis" title="${circ}">${circShort}</td>
+          <td class="mo" style="background:rgba(26,26,13,0.3);color:var(--cyan)">${gcs}</td>
+          <td class="mo" style="background:rgba(26,26,13,0.3);font-size:10px;color:#fde68a;border-right:1px solid var(--border)">${pupil}</td>
+          <td style="background:rgba(10,32,48,0.3);border-right:1px solid var(--border)">${renderVSTags(r)}</td>
+          <td style="background:rgba(15,32,16,0.3);border-right:1px solid var(--border)">${renderTXList(r)}</td>
           <td style="color:var(--muted);font-size:11px">${rec}</td>
           <td><button onclick="openModal(${idx})" style="background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);color:var(--cyan);border-radius:6px;padding:3px 8px;cursor:pointer;font-size:11px">ดู</button></td>
         </tr>`;
