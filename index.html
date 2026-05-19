@@ -4,105 +4,468 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#0f172a">
-<title>EMS Tools</title>
-<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#07152a">
+<title>EMS System Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{--navy:#0f172a;--navy-mid:#1e293b;--blue:#2563eb;--orange:#f97316;--white:#f8fafc;--muted:#94a3b8;--border:rgba(255,255,255,0.08)}
-html,body{min-height:100%;background:var(--navy);color:var(--white);font-family:'Sarabun',sans-serif}
-body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 10%,rgba(37,99,235,.12),transparent 60%),radial-gradient(ellipse 60% 50% at 80% 80%,rgba(249,115,22,.08),transparent 60%);pointer-events:none;z-index:0}
-body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(255,255,255,.015) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.015) 1px,transparent 1px);background-size:48px 48px;pointer-events:none;z-index:0}
-.wrap{position:relative;z-index:1;max-width:600px;margin:0 auto;padding:48px 20px 60px;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center}
-.badge{display:inline-flex;align-items:center;gap:6px;background:rgba(37,99,235,.15);border:1px solid rgba(37,99,235,.3);color:#93c5fd;padding:5px 14px;border-radius:20px;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
-.dot{width:6px;height:6px;background:#93c5fd;border-radius:50%;animation:p 2s infinite}
-@keyframes p{0%,100%{opacity:1}50%{opacity:.3}}
-h1{font-size:clamp(26px,6vw,38px);font-weight:700;letter-spacing:-.5px;line-height:1.15;margin-bottom:12px;text-align:center}
-h1 span{background:linear-gradient(135deg,#60a5fa,#2563eb);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
-.sub{color:var(--muted);font-size:15px;text-align:center;max-width:360px;margin:0 auto 48px;line-height:1.6}
-.cards{width:100%;display:flex;flex-direction:column;gap:14px}
-.card{display:block;text-decoration:none;background:var(--navy-mid);border:1px solid var(--border);border-radius:20px;padding:24px;transition:transform .2s,border-color .2s,box-shadow .2s;position:relative;overflow:hidden}
-.card::before{content:'';position:absolute;inset:0;border-radius:20px;opacity:0;transition:opacity .2s}
-.cb::before{background:radial-gradient(ellipse at 0 0,rgba(37,99,235,.25),transparent 70%)}
-.co::before{background:radial-gradient(ellipse at 0 0,rgba(249,115,22,.2),transparent 70%)}
-.card:hover{transform:translateY(-3px)}
-.card:hover::before{opacity:1}
-.cb:hover{box-shadow:0 8px 40px rgba(37,99,235,.2);border-color:rgba(37,99,235,.4)}
-.co:hover{box-shadow:0 8px 40px rgba(249,115,22,.15);border-color:rgba(249,115,22,.4)}
-.card:active{transform:translateY(-1px)}
-.ci{position:relative;z-index:1}
-.ct{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px}
-.ic{width:48px;height:48px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
-.ib{background:rgba(37,99,235,.2)}.io{background:rgba(249,115,22,.15)}
-.tag{font-size:10px;font-family:'IBM Plex Mono',monospace;letter-spacing:.8px;text-transform:uppercase;padding:4px 10px;border-radius:6px}
-.tb{background:rgba(37,99,235,.15);color:#93c5fd;border:1px solid rgba(37,99,235,.25)}
-.to{background:rgba(249,115,22,.12);color:#fdba74;border:1px solid rgba(249,115,22,.25)}
-.card h2{font-size:18px;font-weight:600;color:var(--white);margin-bottom:6px}
-.card p{font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:16px}
-.pills{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:18px}
-.pill{font-size:12px;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.05);color:#cbd5e1;border:1px solid rgba(255,255,255,.07)}
-.cf{display:flex;align-items:center;justify-content:space-between}
-.ver{font-size:11px;font-family:'IBM Plex Mono',monospace;color:#475569}
-.arr{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;transition:transform .2s}
-.ab{background:rgba(37,99,235,.2);color:#93c5fd}
-.ao{background:rgba(249,115,22,.15);color:#fdba74}
-.card:hover .arr{transform:translate(2px,-2px)}
-.div{display:flex;align-items:center;gap:12px;color:#475569;font-size:11px;font-family:'IBM Plex Mono',monospace;letter-spacing:1px;text-transform:uppercase;padding:2px 0}
-.div::before,.div::after{content:'';flex:1;height:1px;background:var(--border)}
-.foot{margin-top:44px;text-align:center;color:#475569;font-size:12px;font-family:'IBM Plex Mono',monospace;line-height:1.8}
-.fu{opacity:0;transform:translateY(18px);animation:fu .5s ease forwards}
-.d1{animation-delay:.1s}.d2{animation-delay:.2s}.d3{animation-delay:.32s}.d4{animation-delay:.42s}.d5{animation-delay:.52s}
-@keyframes fu{to{opacity:1;transform:translateY(0)}}
+:root {
+  --bg: #07152a;
+  --card: #0d2137;
+  --border: rgba(30,111,255,0.18);
+  --cyan: #00d4ff;
+  --blue: #2563eb;
+  --green: #2ed573;
+  --yellow: #ffa502;
+  --red: #ff4757;
+  --text: #e8f4ff;
+  --muted: #7aa3cc;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body {
+  min-height: 100%;
+  background: var(--bg);
+  font-family: 'Sarabun', sans-serif;
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* Scanline */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.01) 2px, rgba(0,212,255,0.01) 4px);
+  pointer-events: none; z-index: 0;
+}
+
+.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+/* ====== HEADER ====== */
+.hero {
+  padding: calc(var(--safe-top) + 40px) 24px 40px;
+  text-align: center;
+  position: relative;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(0,212,255,0.1);
+  border: 1px solid rgba(0,212,255,0.3);
+  border-radius: 20px;
+  padding: 4px 16px;
+  font-size: 11px;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--cyan);
+  letter-spacing: 1px;
+  margin-bottom: 18px;
+}
+.hero h1 {
+  font-size: clamp(28px, 6vw, 48px);
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 2px;
+  line-height: 1.1;
+  margin-bottom: 10px;
+}
+.hero h1 .ems { color: var(--cyan); text-shadow: 0 0 30px rgba(0,212,255,0.5); }
+.hero h1 .hub { color: var(--text); }
+.hero p {
+  color: var(--muted);
+  font-size: 15px;
+  max-width: 480px;
+  margin: 0 auto 24px;
+  line-height: 1.6;
+}
+
+/* Live indicator */
+.live-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 12px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 8px;
+}
+.live-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--green);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(46,213,115,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 6px rgba(46,213,115,0)} }
+
+/* ====== CARDS ====== */
+.cards-section {
+  flex: 1;
+  padding: 0 20px calc(var(--safe-bottom) + 40px);
+  max-width: 900px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.section-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.app-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 24px;
+  cursor: pointer;
+  text-decoration: none;
+  color: inherit;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+  position: relative;
+  overflow: hidden;
+}
+.app-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3px;
+  border-radius: 16px 16px 0 0;
+  transition: opacity 0.2s;
+}
+.app-card.blue::before   { background: linear-gradient(90deg, #2563eb, #60a5fa); }
+.app-card.cyan::before   { background: linear-gradient(90deg, #00d4ff, #2ed573); }
+.app-card.yellow::before { background: linear-gradient(90deg, #ffa502, #ff6b35); }
+
+.app-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+}
+.app-card.blue:hover   { border-color: rgba(37,99,235,0.5); box-shadow: 0 12px 40px rgba(37,99,235,0.2); }
+.app-card.cyan:hover   { border-color: rgba(0,212,255,0.5); box-shadow: 0 12px 40px rgba(0,212,255,0.15); }
+.app-card.yellow:hover { border-color: rgba(255,165,2,0.5); box-shadow: 0 12px 40px rgba(255,165,2,0.15); }
+.app-card:active { transform: translateY(-1px); }
+
+.card-icon {
+  font-size: 36px;
+  margin-bottom: 14px;
+  line-height: 1;
+}
+.card-title {
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+  line-height: 1.2;
+}
+.app-card.blue   .card-title { color: #60a5fa; }
+.app-card.cyan   .card-title { color: var(--cyan); }
+.app-card.yellow .card-title { color: var(--yellow); }
+
+.card-subtitle {
+  font-size: 12px;
+  font-family: 'IBM Plex Mono', monospace;
+  margin-bottom: 12px;
+  opacity: 0.6;
+}
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+  flex: 1;
+  margin-bottom: 18px;
+}
+
+.card-features {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+.feat-tag {
+  font-size: 10px;
+  padding: 3px 9px;
+  border-radius: 10px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+}
+.app-card.blue   .feat-tag { background: rgba(37,99,235,0.15); color: #93c5fd; border: 1px solid rgba(37,99,235,0.25); }
+.app-card.cyan   .feat-tag { background: rgba(0,212,255,0.1);  color: #67e8f9; border: 1px solid rgba(0,212,255,0.2); }
+.app-card.yellow .feat-tag { background: rgba(255,165,2,0.12); color: #fcd34d; border: 1px solid rgba(255,165,2,0.25); }
+
+.card-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 11px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  font-family: 'Sarabun', sans-serif;
+  transition: filter 0.15s;
+}
+.card-btn:hover { filter: brightness(1.1); }
+.app-card.blue   .card-btn { background: rgba(37,99,235,0.2); color: #60a5fa; border: 1px solid rgba(37,99,235,0.3); }
+.app-card.cyan   .card-btn { background: rgba(0,212,255,0.15); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
+.app-card.yellow .card-btn { background: rgba(255,165,2,0.15); color: var(--yellow); border: 1px solid rgba(255,165,2,0.3); }
+.btn-arrow { font-size: 18px; }
+
+/* ====== STATS ROW ====== */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  gap: 10px;
+  margin-bottom: 32px;
+}
+.stat-mini {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px;
+  text-align: center;
+}
+.stat-mini .num {
+  font-size: 22px;
+  font-weight: 700;
+  font-family: 'IBM Plex Mono', monospace;
+  color: var(--cyan);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-mini .lbl { font-size: 10px; color: var(--muted); }
+
+/* ====== FOOTER ====== */
+.footer {
+  text-align: center;
+  padding: 20px 24px calc(var(--safe-bottom) + 20px);
+  font-size: 11px;
+  color: var(--muted);
+  font-family: 'IBM Plex Mono', monospace;
+  border-top: 1px solid var(--border);
+  line-height: 1.8;
+}
+
+/* Divider */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 0 0 28px;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .hero { padding-top: calc(var(--safe-top) + 28px); }
+  .cards-section { padding: 0 14px calc(var(--safe-bottom) + 28px); }
+  .app-card { padding: 18px; }
+}
 </style>
 </head>
 <body>
-<div class="wrap">
-  <div class="fu d1" style="text-align:center;margin-bottom:48px">
-    <div class="badge"><div class="dot"></div> EMS Tools — ระบบ Online</div>
-    <h1>ระบบบันทึกข้อมูล<br><span>การแพทย์ฉุกเฉิน</span></h1>
-    <p class="sub">เครื่องมือดิจิทัลสำหรับทีม EMS บันทึกข้อมูลผู้ป่วยและวิเคราะห์สาเหตุความล่าช้า</p>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-badge">⚡ EMS SYSTEM v2.4</div>
+    <h1>
+      <span class="ems">EMS</span><br>
+      <span class="hub">Pre-Hospital Hub</span>
+    </h1>
+    <p>ระบบรายงานผู้ป่วยก่อนถึงโรงพยาบาล — กรอกข้อมูล, ดูรายงาน, วิเคราะห์ความล่าช้า</p>
+    <div class="live-row">
+      <div class="live-dot"></div>
+      <span id="datetime">...</span>
+    </div>
   </div>
-  <div class="cards">
-    
-    <a class="card cb fu d2" href="pre_hospital_app.html">
-      <div class="ci">
-        <div class="ct"><div class="ic ib">🚑</div><span class="tag tb">Primary Report</span></div>
-        <h2>Pre-Hospital Patient Report</h2>
-        <p>บันทึกข้อมูลผู้ป่วย ณ จุดเกิดเหตุ ครอบคลุม Triage, Primary Survey (XABCD), Vital Signs และการรักษา</p>
-        <div class="pills">
-          <span class="pill">📋 Triage Code</span>
-          <span class="pill">🔍 XABCD Assessment</span>
-          <span class="pill">📊 Vital Signs</span>
-          <span class="pill">💊 Treatment Log</span>
-          <span class="pill">📱 Mobile Ready</span>
+
+  <div class="cards-section">
+
+    <!-- Stats mini -->
+    <div class="stats-row" id="statsRow">
+      <div class="stat-mini"><div class="num" id="statTotal">—</div><div class="lbl">ผู้ป่วยทั้งหมด</div></div>
+      <div class="stat-mini"><div class="num" style="color:#ff4757" id="statRed">—</div><div class="lbl">IDC แดง</div></div>
+      <div class="stat-mini"><div class="num" style="color:#ffa502" id="statYellow">—</div><div class="lbl">IDC เหลือง</div></div>
+      <div class="stat-mini"><div class="num" style="color:#2ed573" id="statGreen">—</div><div class="lbl">IDC เขียว</div></div>
+      <div class="stat-mini"><div class="num" style="color:#a78bfa" id="statToday">—</div><div class="lbl">วันนี้</div></div>
+    </div>
+
+    <div class="section-label">แอปพลิเคชัน</div>
+
+    <div class="card-grid">
+
+      <!-- App 1: กรอกฟอร์ม -->
+      <a class="app-card blue" href="pre_hospital_app.html">
+        <div class="card-icon">📋</div>
+        <div class="card-title">กรอกรายงาน</div>
+        <div class="card-subtitle">pre_hospital_app.html</div>
+        <div class="card-desc">
+          กรอกข้อมูลผู้ป่วย Pre-Hospital ครบทุกหมวด — Triage, ABCDE Assessment, Vital Signs, Treatment แล้วบันทึกลง GitHub โดยตรง
         </div>
-        <div class="cf"><span class="ver">v2.2</span><div class="arr ab">↗</div></div>
-      </div>
-    </a>
-    
-    <div class="div fu d3">หรือ</div>
-    
-    <a class="card co fu d4" href="delay.html">
-      <div class="ci">
-        <div class="ct"><div class="ic io">⏱️</div><span class="tag to">Delay Analysis</span></div>
-        <h2>EMS Delay Analysis Report</h2>
-        <p>วิเคราะห์สาเหตุการปฏิบัติการล่าช้า เกณฑ์ระยะทาง ≤ 10 กม. แต่ใช้เวลาเกิน 10 นาที พร้อม Export PDF</p>
-        <div class="pills">
-          <span class="pill">👥 Personnel</span>
-          <span class="pill">📍 Location</span>
-          <span class="pill">🚗 Vehicle</span>
-          <span class="pill">🌧️ Situation</span>
-          <span class="pill">📄 Export PDF</span>
+        <div class="card-features">
+          <span class="feat-tag">📋 Triage</span>
+          <span class="feat-tag">🔍 ABCDE</span>
+          <span class="feat-tag">📊 Vital Signs</span>
+          <span class="feat-tag">💊 Treatment</span>
+          <span class="feat-tag">☁️ บันทึกลง Git</span>
         </div>
-        <div class="cf"><span class="ver">v1.0</span><div class="arr ao">↗</div></div>
+        <div class="card-btn">
+          <span>เปิดฟอร์มกรอกข้อมูล</span>
+          <span class="btn-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- App 2: Dashboard -->
+      <a class="app-card cyan" href="ems-dashboard.html">
+        <div class="card-icon">📊</div>
+        <div class="card-title">Dashboard</div>
+        <div class="card-subtitle">ems-dashboard.html</div>
+        <div class="card-desc">
+          ดูรายงานและสถิติผู้ป่วยทั้งหมด ดึงข้อมูลจาก GitHub โดยตรง พร้อม Export Excel และเชื่อม Google Sheet
+        </div>
+        <div class="card-features">
+          <span class="feat-tag">📈 กราฟสถิติ</span>
+          <span class="feat-tag">🔍 ค้นหา</span>
+          <span class="feat-tag">📊 Export Excel</span>
+          <span class="feat-tag">📋 Google Sheet</span>
+          <span class="feat-tag">🔎 รายละเอียด</span>
+        </div>
+        <div class="card-btn">
+          <span>เปิด Dashboard</span>
+          <span class="btn-arrow">→</span>
+        </div>
+      </a>
+
+      <!-- App 3: Delay Analysis -->
+      <a class="app-card yellow" href="delay.html">
+        <div class="card-icon">⏱️</div>
+        <div class="card-title">วิเคราะห์ความล่าช้า</div>
+        <div class="card-subtitle">delay.html</div>
+        <div class="card-desc">
+          วิเคราะห์ Detailed Delay Analysis สำหรับระบบ EMS — ติดตามและประเมินเวลาตอบสนองในแต่ละขั้นตอน
+        </div>
+        <div class="card-features">
+          <span class="feat-tag">⏱️ Response Time</span>
+          <span class="feat-tag">📉 Delay Analysis</span>
+          <span class="feat-tag">🖨️ พิมพ์ PDF</span>
+        </div>
+        <div class="card-btn">
+          <span>เปิดวิเคราะห์ความล่าช้า</span>
+          <span class="btn-arrow">→</span>
+        </div>
+      </a>
+
+    </div>
+
+    <!-- Quick links -->
+    <div class="section-label">ข้อมูลระบบ</div>
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:28px">
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:13px;color:var(--muted)">
+        <div>
+          <div style="color:var(--text);font-weight:600;margin-bottom:4px">📁 ข้อมูล CSV</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">ems_records.csv</div>
+        </div>
+        <div>
+          <div style="color:var(--text);font-weight:600;margin-bottom:4px">🏠 GitHub Repo</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">udon2536/report.github.io</div>
+        </div>
+        <div>
+          <div style="color:var(--text);font-weight:600;margin-bottom:4px">🌐 GitHub Pages</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">udon2536.github.io/report.github.io</div>
+        </div>
+        <div>
+          <div style="color:var(--text);font-weight:600;margin-bottom:4px">📦 Version</div>
+          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">EMS System v2.4</div>
+        </div>
       </div>
-    </a>
-    
+    </div>
+
   </div>
-  <div class="foot fu d5">
-    <div>udon2536 · EMS Digital Tools</div>
-    <div style="color:#334155;margin-top:3px">udon2536.github.io</div>
+
+  <div class="footer">
+    EMS Pre-Hospital Report System · udon2536/report.github.io<br>
+    ข้อมูลทั้งหมดเก็บใน GitHub Repository ของคุณโดยตรง
   </div>
+
 </div>
+
+<script>
+// Datetime
+function updateTime() {
+  const now = new Date();
+  document.getElementById('datetime').textContent =
+    now.toLocaleDateString('th-TH', {weekday:'short', day:'2-digit', month:'short', year:'2-digit'}) +
+    ' · ' + now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+}
+updateTime();
+setInterval(updateTime, 1000);
+
+// Load stats from GitHub CSV
+async function loadStats() {
+  try {
+    const url = 'https://raw.githubusercontent.com/udon2536/report.github.io/main/ems_records.csv?t=' + Date.now();
+    const res = await fetch(url);
+    if (!res.ok) return;
+    const buf = await res.arrayBuffer();
+    const text = new TextDecoder('utf-8').decode(buf);
+    const lines = text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(l => l.trim());
+    if (lines.length < 2) return;
+
+    function splitLine(line) {
+      const res = []; let cur = '', inQ = false;
+      for (let i = 0; i < line.length; i++) {
+        const c = line[i];
+        if (c === '"') { if (inQ && line[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
+        else if (c === ',' && !inQ) { res.push(cur); cur = ''; }
+        else cur += c;
+      }
+      res.push(cur); return res;
+    }
+
+    const headers = splitLine(lines[0]);
+    const idcIdx = headers.indexOf('IDC');
+    const dateIdx = headers.indexOf('Date');
+    const rows = lines.slice(1).map(l => splitLine(l));
+
+    const total = rows.length;
+    const red    = rows.filter(r => (r[idcIdx]||'').trim() === 'แดง').length;
+    const yellow = rows.filter(r => (r[idcIdx]||'').trim() === 'เหลือง').length;
+    const green  = rows.filter(r => (r[idcIdx]||'').trim() === 'เขียว').length;
+
+    // Today count
+    const today = new Date().toISOString().split('T')[0];
+    const todayCount = rows.filter(r => (r[dateIdx]||'').trim() === today).length;
+
+    document.getElementById('statTotal').textContent  = total;
+    document.getElementById('statRed').textContent    = red;
+    document.getElementById('statYellow').textContent = yellow;
+    document.getElementById('statGreen').textContent  = green;
+    document.getElementById('statToday').textContent  = todayCount;
+  } catch(e) {
+    // ถ้าโหลดไม่ได้ ปล่อยแสดง — ไม่ error
+  }
+}
+
+loadStats();
+</script>
 </body>
 </html>
