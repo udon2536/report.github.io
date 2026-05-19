@@ -10,283 +10,94 @@
 <link href="https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #07152a;
-  --card: #0d2137;
-  --border: rgba(30,111,255,0.18);
-  --cyan: #00d4ff;
-  --blue: #2563eb;
-  --green: #2ed573;
-  --yellow: #ffa502;
-  --red: #ff4757;
-  --text: #e8f4ff;
-  --muted: #7aa3cc;
-  --safe-top: env(safe-area-inset-top, 0px);
-  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --bg:#07152a; --card:#0d2137; --border:rgba(30,111,255,0.18);
+  --cyan:#00d4ff; --blue:#2563eb; --green:#2ed573;
+  --yellow:#ffa502; --red:#ff4757; --text:#e8f4ff; --muted:#7aa3cc;
+  --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
 }
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body {
-  min-height: 100%;
-  background: var(--bg);
-  font-family: 'Sarabun', sans-serif;
-  color: var(--text);
-  overflow-x: hidden;
-}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100%;background:var(--bg);font-family:'Sarabun',sans-serif;color:var(--text);overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,212,255,0.01) 2px,rgba(0,212,255,0.01) 4px);pointer-events:none;z-index:0}
+.page{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
 
-/* Scanline */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.01) 2px, rgba(0,212,255,0.01) 4px);
-  pointer-events: none; z-index: 0;
-}
+/* HERO */
+.hero{padding:calc(var(--safe-top) + 36px) 24px 32px;text-align:center}
+.hero-badge{display:inline-block;background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.3);border-radius:20px;padding:4px 16px;font-size:11px;font-family:'IBM Plex Mono',monospace;color:var(--cyan);letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:clamp(26px,6vw,44px);font-weight:700;font-family:'IBM Plex Mono',monospace;letter-spacing:2px;line-height:1.15;margin-bottom:10px}
+.hero h1 .ems{color:var(--cyan);text-shadow:0 0 30px rgba(0,212,255,0.5)}
+.hero h1 .hub{color:var(--text)}
+.hero p{color:var(--muted);font-size:14px;max-width:460px;margin:0 auto 20px;line-height:1.6}
+.live-row{display:flex;align-items:center;justify-content:center;gap:8px;font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.live-dot{width:8px;height:8px;border-radius:50%;background:var(--green);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(46,213,115,0.4)}50%{opacity:0.7;box-shadow:0 0 0 6px rgba(46,213,115,0)}}
 
-.page { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; }
+/* MAIN */
+.main{flex:1;padding:0 18px calc(var(--safe-bottom) + 36px);max-width:880px;margin:0 auto;width:100%}
 
-/* ====== HEADER ====== */
-.hero {
-  padding: calc(var(--safe-top) + 40px) 24px 40px;
-  text-align: center;
-  position: relative;
-}
-.hero-badge {
-  display: inline-block;
-  background: rgba(0,212,255,0.1);
-  border: 1px solid rgba(0,212,255,0.3);
-  border-radius: 20px;
-  padding: 4px 16px;
-  font-size: 11px;
-  font-family: 'IBM Plex Mono', monospace;
-  color: var(--cyan);
-  letter-spacing: 1px;
-  margin-bottom: 18px;
-}
-.hero h1 {
-  font-size: clamp(28px, 6vw, 48px);
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-  letter-spacing: 2px;
-  line-height: 1.1;
-  margin-bottom: 10px;
-}
-.hero h1 .ems { color: var(--cyan); text-shadow: 0 0 30px rgba(0,212,255,0.5); }
-.hero h1 .hub { color: var(--text); }
-.hero p {
-  color: var(--muted);
-  font-size: 15px;
-  max-width: 480px;
-  margin: 0 auto 24px;
-  line-height: 1.6;
-}
+/* Stats */
+.stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:24px}
+.stat-mini{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center}
+.stat-mini .num{font-size:24px;font-weight:700;font-family:'IBM Plex Mono',monospace;color:var(--cyan);line-height:1;margin-bottom:4px}
+.stat-mini .lbl{font-size:10px;color:var(--muted)}
 
-/* Live indicator */
-.live-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-  font-size: 12px;
-  color: var(--muted);
-  font-family: 'IBM Plex Mono', monospace;
-  margin-bottom: 8px;
-}
-.live-dot {
-  width: 8px; height: 8px;
-  border-radius: 50%;
-  background: var(--green);
-  animation: pulse 2s infinite;
-}
-@keyframes pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(46,213,115,0.4)} 50%{opacity:0.7;box-shadow:0 0 0 6px rgba(46,213,115,0)} }
+/* Section label */
+.sec-lbl{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:12px;display:flex;align-items:center;gap:10px}
+.sec-lbl::after{content:'';flex:1;height:1px;background:var(--border)}
 
-/* ====== CARDS ====== */
-.cards-section {
-  flex: 1;
-  padding: 0 20px calc(var(--safe-bottom) + 40px);
-  max-width: 900px;
-  margin: 0 auto;
-  width: 100%;
-}
+/* Cards */
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-bottom:28px}
+.app-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:22px;cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;transition:transform 0.2s,box-shadow 0.2s,border-color 0.2s;position:relative;overflow:hidden}
+.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:16px 16px 0 0}
+.app-card.blue::before{background:linear-gradient(90deg,#2563eb,#60a5fa)}
+.app-card.cyan::before{background:linear-gradient(90deg,#00d4ff,#2ed573)}
+.app-card.yellow::before{background:linear-gradient(90deg,#ffa502,#ff6b35)}
+.app-card:hover{transform:translateY(-4px)}
+.app-card.blue:hover{border-color:rgba(37,99,235,0.5);box-shadow:0 10px 36px rgba(37,99,235,0.2)}
+.app-card.cyan:hover{border-color:rgba(0,212,255,0.5);box-shadow:0 10px 36px rgba(0,212,255,0.15)}
+.app-card.yellow:hover{border-color:rgba(255,165,2,0.5);box-shadow:0 10px 36px rgba(255,165,2,0.15)}
+.card-icon{font-size:34px;margin-bottom:12px;line-height:1}
+.card-title{font-size:17px;font-weight:700;margin-bottom:5px}
+.app-card.blue .card-title{color:#60a5fa}
+.app-card.cyan .card-title{color:var(--cyan)}
+.app-card.yellow .card-title{color:var(--yellow)}
+.card-subtitle{font-size:11px;font-family:'IBM Plex Mono',monospace;margin-bottom:10px;opacity:0.55}
+.card-desc{font-size:13px;color:var(--muted);line-height:1.6;flex:1;margin-bottom:16px}
+.card-features{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:16px}
+.feat-tag{font-size:10px;padding:3px 9px;border-radius:10px;font-weight:600}
+.app-card.blue .feat-tag{background:rgba(37,99,235,0.15);color:#93c5fd;border:1px solid rgba(37,99,235,0.25)}
+.app-card.cyan .feat-tag{background:rgba(0,212,255,0.1);color:#67e8f9;border:1px solid rgba(0,212,255,0.2)}
+.app-card.yellow .feat-tag{background:rgba(255,165,2,0.12);color:#fcd34d;border:1px solid rgba(255,165,2,0.25)}
+.card-btn{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-radius:10px;font-size:14px;font-weight:600;border:none;cursor:pointer;font-family:'Sarabun',sans-serif;transition:filter 0.15s}
+.card-btn:hover{filter:brightness(1.1)}
+.app-card.blue .card-btn{background:rgba(37,99,235,0.18);color:#60a5fa;border:1px solid rgba(37,99,235,0.28)}
+.app-card.cyan .card-btn{background:rgba(0,212,255,0.12);color:var(--cyan);border:1px solid rgba(0,212,255,0.28)}
+.app-card.yellow .card-btn{background:rgba(255,165,2,0.12);color:var(--yellow);border:1px solid rgba(255,165,2,0.28)}
+.btn-arrow{font-size:18px}
 
-.section-label {
-  font-size: 11px;
-  font-weight: 700;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 14px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-.section-label::after {
-  content: '';
-  flex: 1;
-  height: 1px;
-  background: var(--border);
-}
+/* Info box */
+.info-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 18px;margin-bottom:28px}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;font-size:13px;color:var(--muted)}
+.info-item .lbl{color:var(--text);font-weight:600;margin-bottom:3px;font-size:13px}
+.info-item .val{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)}
 
-.card-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 16px;
-  margin-bottom: 32px;
-}
-
-.app-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 16px;
-  padding: 24px;
-  cursor: pointer;
-  text-decoration: none;
-  color: inherit;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-  position: relative;
-  overflow: hidden;
-}
-.app-card::before {
-  content: '';
-  position: absolute;
-  top: 0; left: 0; right: 0;
-  height: 3px;
-  border-radius: 16px 16px 0 0;
-  transition: opacity 0.2s;
-}
-.app-card.blue::before   { background: linear-gradient(90deg, #2563eb, #60a5fa); }
-.app-card.cyan::before   { background: linear-gradient(90deg, #00d4ff, #2ed573); }
-.app-card.yellow::before { background: linear-gradient(90deg, #ffa502, #ff6b35); }
-
-.app-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
-}
-.app-card.blue:hover   { border-color: rgba(37,99,235,0.5); box-shadow: 0 12px 40px rgba(37,99,235,0.2); }
-.app-card.cyan:hover   { border-color: rgba(0,212,255,0.5); box-shadow: 0 12px 40px rgba(0,212,255,0.15); }
-.app-card.yellow:hover { border-color: rgba(255,165,2,0.5); box-shadow: 0 12px 40px rgba(255,165,2,0.15); }
-.app-card:active { transform: translateY(-1px); }
-
-.card-icon {
-  font-size: 36px;
-  margin-bottom: 14px;
-  line-height: 1;
-}
-.card-title {
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 6px;
-  line-height: 1.2;
-}
-.app-card.blue   .card-title { color: #60a5fa; }
-.app-card.cyan   .card-title { color: var(--cyan); }
-.app-card.yellow .card-title { color: var(--yellow); }
-
-.card-subtitle {
-  font-size: 12px;
-  font-family: 'IBM Plex Mono', monospace;
-  margin-bottom: 12px;
-  opacity: 0.6;
-}
-.card-desc {
-  font-size: 13px;
-  color: var(--muted);
-  line-height: 1.6;
-  flex: 1;
-  margin-bottom: 18px;
-}
-
-.card-features {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-  margin-bottom: 18px;
-}
-.feat-tag {
-  font-size: 10px;
-  padding: 3px 9px;
-  border-radius: 10px;
-  font-weight: 600;
-  letter-spacing: 0.3px;
-}
-.app-card.blue   .feat-tag { background: rgba(37,99,235,0.15); color: #93c5fd; border: 1px solid rgba(37,99,235,0.25); }
-.app-card.cyan   .feat-tag { background: rgba(0,212,255,0.1);  color: #67e8f9; border: 1px solid rgba(0,212,255,0.2); }
-.app-card.yellow .feat-tag { background: rgba(255,165,2,0.12); color: #fcd34d; border: 1px solid rgba(255,165,2,0.25); }
-
-.card-btn {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 11px 16px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 600;
-  border: none;
-  cursor: pointer;
-  font-family: 'Sarabun', sans-serif;
-  transition: filter 0.15s;
-}
-.card-btn:hover { filter: brightness(1.1); }
-.app-card.blue   .card-btn { background: rgba(37,99,235,0.2); color: #60a5fa; border: 1px solid rgba(37,99,235,0.3); }
-.app-card.cyan   .card-btn { background: rgba(0,212,255,0.15); color: var(--cyan); border: 1px solid rgba(0,212,255,0.3); }
-.app-card.yellow .card-btn { background: rgba(255,165,2,0.15); color: var(--yellow); border: 1px solid rgba(255,165,2,0.3); }
-.btn-arrow { font-size: 18px; }
-
-/* ====== STATS ROW ====== */
-.stats-row {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
-  gap: 10px;
-  margin-bottom: 32px;
-}
-.stat-mini {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px;
-  text-align: center;
-}
-.stat-mini .num {
-  font-size: 22px;
-  font-weight: 700;
-  font-family: 'IBM Plex Mono', monospace;
-  color: var(--cyan);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.stat-mini .lbl { font-size: 10px; color: var(--muted); }
-
-/* ====== FOOTER ====== */
-.footer {
-  text-align: center;
-  padding: 20px 24px calc(var(--safe-bottom) + 20px);
-  font-size: 11px;
-  color: var(--muted);
-  font-family: 'IBM Plex Mono', monospace;
-  border-top: 1px solid var(--border);
-  line-height: 1.8;
-}
-
-/* Divider */
-.divider {
-  height: 1px;
-  background: var(--border);
-  margin: 0 0 28px;
-}
+/* Footer */
+.footer{text-align:center;padding:16px 24px calc(var(--safe-bottom) + 16px);font-size:11px;color:var(--muted);font-family:'IBM Plex Mono',monospace;border-top:1px solid var(--border);line-height:1.8}
 
 /* Responsive */
-@media (max-width: 480px) {
-  .hero { padding-top: calc(var(--safe-top) + 28px); }
-  .cards-section { padding: 0 14px calc(var(--safe-bottom) + 28px); }
-  .app-card { padding: 18px; }
+@media(max-width:480px){
+  .hero{padding-top:calc(var(--safe-top) + 24px)}
+  .main{padding:0 12px calc(var(--safe-bottom) + 24px)}
+  .stats-row{grid-template-columns:repeat(3,1fr)}
+  .stats-row .stat-mini:nth-child(n+4){display:none}
+  .app-card{padding:16px}
 }
 </style>
 </head>
 <body>
 <div class="page">
 
-  <!-- HERO -->
   <div class="hero">
-    <div class="hero-badge">⚡ EMS SYSTEM v2.4</div>
+    <div class="hero-badge">⚡ EMS SYSTEM v1.0 Demo</div>
     <h1>
       <span class="ems">EMS</span><br>
       <span class="hub">Pre-Hospital Hub</span>
@@ -298,29 +109,27 @@ body::before {
     </div>
   </div>
 
-  <div class="cards-section">
+  <div class="main">
 
-    <!-- Stats mini -->
-    <div class="stats-row" id="statsRow">
-      <div class="stat-mini"><div class="num" id="statTotal">—</div><div class="lbl">ผู้ป่วยทั้งหมด</div></div>
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-mini"><div class="num" id="statTotal">—</div><div class="lbl">ทั้งหมด</div></div>
       <div class="stat-mini"><div class="num" style="color:#ff4757" id="statRed">—</div><div class="lbl">IDC แดง</div></div>
       <div class="stat-mini"><div class="num" style="color:#ffa502" id="statYellow">—</div><div class="lbl">IDC เหลือง</div></div>
       <div class="stat-mini"><div class="num" style="color:#2ed573" id="statGreen">—</div><div class="lbl">IDC เขียว</div></div>
       <div class="stat-mini"><div class="num" style="color:#a78bfa" id="statToday">—</div><div class="lbl">วันนี้</div></div>
     </div>
 
-    <div class="section-label">แอปพลิเคชัน</div>
+    <div class="sec-lbl">แอปพลิเคชัน</div>
 
     <div class="card-grid">
 
-      <!-- App 1: กรอกฟอร์ม -->
+      <!-- กรอกฟอร์ม -->
       <a class="app-card blue" href="pre_hospital_app.html">
         <div class="card-icon">📋</div>
         <div class="card-title">กรอกรายงาน</div>
         <div class="card-subtitle">pre_hospital_app.html</div>
-        <div class="card-desc">
-          กรอกข้อมูลผู้ป่วย Pre-Hospital ครบทุกหมวด — Triage, ABCDE Assessment, Vital Signs, Treatment แล้วบันทึกลง GitHub โดยตรง
-        </div>
+        <div class="card-desc">กรอกข้อมูลผู้ป่วย Pre-Hospital ครบทุกหมวด แล้วบันทึกลง GitHub โดยตรง</div>
         <div class="card-features">
           <span class="feat-tag">📋 Triage</span>
           <span class="feat-tag">🔍 ABCDE</span>
@@ -328,143 +137,87 @@ body::before {
           <span class="feat-tag">💊 Treatment</span>
           <span class="feat-tag">☁️ บันทึกลง Git</span>
         </div>
-        <div class="card-btn">
-          <span>เปิดฟอร์มกรอกข้อมูล</span>
-          <span class="btn-arrow">→</span>
-        </div>
+        <div class="card-btn"><span>เปิดฟอร์มกรอกข้อมูล</span><span class="btn-arrow">→</span></div>
       </a>
 
-      <!-- App 2: Dashboard -->
+      <!-- Dashboard -->
       <a class="app-card cyan" href="ems-dashboard.html">
         <div class="card-icon">📊</div>
         <div class="card-title">Dashboard</div>
         <div class="card-subtitle">ems-dashboard.html</div>
-        <div class="card-desc">
-          ดูรายงานและสถิติผู้ป่วยทั้งหมด ดึงข้อมูลจาก GitHub โดยตรง พร้อม Export Excel และเชื่อม Google Sheet
-        </div>
+        <div class="card-desc">ดูรายงานและสถิติผู้ป่วยทั้งหมด ดึงข้อมูลจาก GitHub พร้อม Export Excel และ Google Sheet</div>
         <div class="card-features">
           <span class="feat-tag">📈 กราฟสถิติ</span>
           <span class="feat-tag">🔍 ค้นหา</span>
           <span class="feat-tag">📊 Export Excel</span>
           <span class="feat-tag">📋 Google Sheet</span>
-          <span class="feat-tag">🔎 รายละเอียด</span>
         </div>
-        <div class="card-btn">
-          <span>เปิด Dashboard</span>
-          <span class="btn-arrow">→</span>
-        </div>
+        <div class="card-btn"><span>เปิด Dashboard</span><span class="btn-arrow">→</span></div>
       </a>
 
-      <!-- App 3: Delay Analysis -->
+      <!-- Delay Analysis -->
       <a class="app-card yellow" href="delay.html">
         <div class="card-icon">⏱️</div>
         <div class="card-title">วิเคราะห์ความล่าช้า</div>
         <div class="card-subtitle">delay.html</div>
-        <div class="card-desc">
-          วิเคราะห์ Detailed Delay Analysis สำหรับระบบ EMS — ติดตามและประเมินเวลาตอบสนองในแต่ละขั้นตอน
-        </div>
+        <div class="card-desc">Detailed Delay Analysis ติดตามและประเมินเวลาตอบสนองในแต่ละขั้นตอนของ EMS</div>
         <div class="card-features">
           <span class="feat-tag">⏱️ Response Time</span>
           <span class="feat-tag">📉 Delay Analysis</span>
           <span class="feat-tag">🖨️ พิมพ์ PDF</span>
         </div>
-        <div class="card-btn">
-          <span>เปิดวิเคราะห์ความล่าช้า</span>
-          <span class="btn-arrow">→</span>
-        </div>
+        <div class="card-btn"><span>เปิดวิเคราะห์ความล่าช้า</span><span class="btn-arrow">→</span></div>
       </a>
 
     </div>
 
-    <!-- Quick links -->
-    <div class="section-label">ข้อมูลระบบ</div>
-    <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 20px;margin-bottom:28px">
-      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;font-size:13px;color:var(--muted)">
-        <div>
-          <div style="color:var(--text);font-weight:600;margin-bottom:4px">📁 ข้อมูล CSV</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">ems_records.csv</div>
-        </div>
-        <div>
-          <div style="color:var(--text);font-weight:600;margin-bottom:4px">🏠 GitHub Repo</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">udon2536/report.github.io</div>
-        </div>
-        <div>
-          <div style="color:var(--text);font-weight:600;margin-bottom:4px">🌐 GitHub Pages</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">udon2536.github.io/report.github.io</div>
-        </div>
-        <div>
-          <div style="color:var(--text);font-weight:600;margin-bottom:4px">📦 Version</div>
-          <div style="font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--cyan)">EMS System v2.4</div>
-        </div>
+    <div class="sec-lbl">ข้อมูลระบบ</div>
+    <div class="info-box">
+      <div class="info-grid">
+        <div class="info-item"><div class="lbl">📁 ไฟล์ข้อมูล</div><div class="val">ems_records.csv</div></div>
+        <div class="info-item"><div class="lbl">🏠 GitHub Repo</div><div class="val">udon2536/report.github.io</div></div>
+        <div class="info-item"><div class="lbl">🌐 GitHub Pages</div><div class="val">udon2536.github.io/report.github.io</div></div>
+        <div class="info-item"><div class="lbl">📦 Version</div><div class="val">v1.0 Demo</div></div>
       </div>
     </div>
 
   </div>
 
   <div class="footer">
-    EMS Pre-Hospital Report System · udon2536/report.github.io<br>
-    ข้อมูลทั้งหมดเก็บใน GitHub Repository ของคุณโดยตรง
+    EMS Pre-Hospital Report System · v1.0 Demo<br>
+    udon2536/report.github.io · ข้อมูลเก็บใน GitHub Repository ของคุณโดยตรง
   </div>
 
 </div>
 
 <script>
-// Datetime
 function updateTime() {
-  const now = new Date();
   document.getElementById('datetime').textContent =
-    now.toLocaleDateString('th-TH', {weekday:'short', day:'2-digit', month:'short', year:'2-digit'}) +
-    ' · ' + now.toLocaleTimeString('th-TH', {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+    new Date().toLocaleDateString('th-TH',{weekday:'short',day:'2-digit',month:'short',year:'2-digit'}) +
+    ' · ' + new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
 }
-updateTime();
-setInterval(updateTime, 1000);
+updateTime(); setInterval(updateTime,1000);
 
-// Load stats from GitHub CSV
 async function loadStats() {
   try {
-    const url = 'https://raw.githubusercontent.com/udon2536/report.github.io/main/ems_records.csv?t=' + Date.now();
-    const res = await fetch(url);
-    if (!res.ok) return;
-    const buf = await res.arrayBuffer();
-    const text = new TextDecoder('utf-8').decode(buf);
-    const lines = text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(l => l.trim());
-    if (lines.length < 2) return;
-
-    function splitLine(line) {
-      const res = []; let cur = '', inQ = false;
-      for (let i = 0; i < line.length; i++) {
-        const c = line[i];
-        if (c === '"') { if (inQ && line[i+1]==='"') { cur+='"'; i++; } else inQ=!inQ; }
-        else if (c === ',' && !inQ) { res.push(cur); cur = ''; }
-        else cur += c;
-      }
-      res.push(cur); return res;
-    }
-
-    const headers = splitLine(lines[0]);
-    const idcIdx = headers.indexOf('IDC');
-    const dateIdx = headers.indexOf('Date');
-    const rows = lines.slice(1).map(l => splitLine(l));
-
-    const total = rows.length;
-    const red    = rows.filter(r => (r[idcIdx]||'').trim() === 'แดง').length;
-    const yellow = rows.filter(r => (r[idcIdx]||'').trim() === 'เหลือง').length;
-    const green  = rows.filter(r => (r[idcIdx]||'').trim() === 'เขียว').length;
-
-    // Today count
-    const today = new Date().toISOString().split('T')[0];
-    const todayCount = rows.filter(r => (r[dateIdx]||'').trim() === today).length;
-
-    document.getElementById('statTotal').textContent  = total;
-    document.getElementById('statRed').textContent    = red;
-    document.getElementById('statYellow').textContent = yellow;
-    document.getElementById('statGreen').textContent  = green;
-    document.getElementById('statToday').textContent  = todayCount;
-  } catch(e) {
-    // ถ้าโหลดไม่ได้ ปล่อยแสดง — ไม่ error
-  }
+    const url='https://raw.githubusercontent.com/udon2536/report.github.io/main/ems_records.csv?t='+Date.now();
+    const res=await fetch(url);
+    if(!res.ok) return;
+    const text=new TextDecoder('utf-8').decode(await res.arrayBuffer());
+    const lines=text.replace(/^\uFEFF/,'').split(/\r?\n/).filter(l=>l.trim());
+    if(lines.length<2) return;
+    function sp(line){const r=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++;}else q=!q;}else if(ch===','&&!q){r.push(c);c='';}else c+=ch;}r.push(c);return r;}
+    const hdr=sp(lines[0]);
+    const idcI=hdr.indexOf('IDC'), dateI=hdr.indexOf('Date');
+    const rows=lines.slice(1).map(l=>sp(l));
+    document.getElementById('statTotal').textContent=rows.length;
+    document.getElementById('statRed').textContent=rows.filter(r=>(r[idcI]||'').trim()==='แดง').length;
+    document.getElementById('statYellow').textContent=rows.filter(r=>(r[idcI]||'').trim()==='เหลือง').length;
+    document.getElementById('statGreen').textContent=rows.filter(r=>(r[idcI]||'').trim()==='เขียว').length;
+    const today=new Date().toISOString().split('T')[0];
+    document.getElementById('statToday').textContent=rows.filter(r=>(r[dateI]||'').trim()===today).length;
+  } catch(e){}
 }
-
 loadStats();
 </script>
 </body>
