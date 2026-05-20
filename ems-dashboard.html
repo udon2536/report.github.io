@@ -100,11 +100,15 @@ tbody td{padding:8px 10px;white-space:nowrap}
 .col-group-tx{background:rgba(46,213,115,0.05)}
 
 /* Pager */
-.pg{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
-.pi{font-size:12px;color:var(--muted)}
-.pbs{display:flex;gap:4px}
-.pb{padding:5px 10px;background:var(--navy);border:1px solid var(--border);border-radius:6px;color:var(--text);cursor:pointer;font-size:12px}
-.pb:hover,.pb.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.pg{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-top:1px solid var(--border);flex-wrap:wrap;gap:8px}
+.pi{font-size:12px;color:var(--muted);font-family:'IBM Plex Mono',monospace}
+.pbs{display:flex;gap:6px;align-items:center}
+.pb{padding:7px 14px;background:var(--navy);border:1px solid var(--border);border-radius:8px;color:var(--text);cursor:pointer;font-size:13px;font-weight:500;transition:all 0.15s;min-width:36px;text-align:center}
+.pb:hover{background:var(--card2);border-color:var(--cyan);color:var(--cyan)}
+.pb.on{background:var(--blue);border-color:var(--blue);color:#fff;font-weight:700}
+.pb.nav{background:rgba(0,212,255,0.1);border:1px solid rgba(0,212,255,0.4);color:var(--cyan);font-size:16px;font-weight:700;padding:7px 16px}
+.pb.nav:hover{background:rgba(0,212,255,0.25)}
+.pb:disabled{opacity:0.3;cursor:not-allowed;pointer-events:none}
 .ph{text-align:center;padding:40px 20px;color:var(--muted);font-size:13px}
 .sp{width:32px;height:32px;border:3px solid var(--border);border-top-color:var(--cyan);border-radius:50%;animation:spin 0.7s linear infinite;margin:0 auto 12px}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -123,9 +127,11 @@ tbody td{padding:8px 10px;white-space:nowrap}
 .modal-label{font-size:10px;color:var(--muted);margin-bottom:3px}
 .modal-value{font-size:13px;color:var(--text);font-weight:500}
 .modal-value.mono{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--cyan)}
-.vs-modal-table{width:100%;border-collapse:collapse;font-size:12px}
-.vs-modal-table th{background:var(--navy2);padding:7px 10px;text-align:center;font-size:10px;color:var(--muted);font-weight:700}
-.vs-modal-table td{padding:7px 10px;text-align:center;border-bottom:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:12px}
+.vs-modal-table{width:100%;border-collapse:collapse;font-size:13px;table-layout:fixed}
+.vs-modal-table col{width:16.66%}
+.vs-modal-table th{background:var(--navy2);padding:10px 8px;text-align:center;font-size:11px;color:var(--muted);font-weight:700;border:1px solid var(--border)}
+.vs-modal-table td{padding:10px 8px;text-align:center;border:1px solid var(--border);font-family:'IBM Plex Mono',monospace;font-size:13px;background:var(--navy)}
+.vs-modal-table tr:nth-child(even) td{background:var(--card2)}
 .tx-modal-row{display:flex;gap:10px;align-items:flex-start;padding:6px 0;border-bottom:1px solid var(--border)}
 .tx-time{font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--yellow);flex-shrink:0;width:60px}
 .tx-text{font-size:13px;color:var(--text)}
@@ -194,7 +200,7 @@ tbody td{padding:8px 10px;white-space:nowrap}
 
 <script>
 let all=[], fil=[], pg=1;
-const PER=20;
+const PER=10;
 
 function setS(msg,state){
   document.getElementById('stxt').textContent=msg;
@@ -218,11 +224,15 @@ function parseCSV(text){
   const lines=text.split(/\r?\n/).filter(l=>l.trim());
   if(lines.length<2) return [];
   const hdr=splitLine(lines[0]);
+  const minCols = Math.floor(hdr.length * 0.5); // ต้องมี column อย่างน้อย 50% ของ header
   return lines.slice(1).map(line=>{
-    const v=splitLine(line), obj={};
+    const v=splitLine(line);
+    // กรองแถวที่ข้อมูลน้อยกว่า minCols (แถวผิดปกติ)
+    if(v.length < minCols) return null;
+    const obj={};
     hdr.forEach((h,i)=>{ obj[h.trim()]=(v[i]||'').trim(); });
     return obj;
-  });
+  }).filter(Boolean); // ลบ null ออก
 }
 
 // Parse VS_All flat text → array of objects
@@ -482,12 +492,19 @@ function renderTable(){
 
   const total=Math.ceil(fil.length/PER);
   document.getElementById('pg').style.display='flex';
-  document.getElementById('pi').textContent=`แสดง ${s+1}–${Math.min(e,fil.length)} จาก ${fil.length} รายการ`;
+  document.getElementById('pi').textContent=`แสดง ${s+1}–${Math.min(e,fil.length)} จาก ${fil.length} รายการ (หน้า ${pg}/${total})`;
   let b='';
-  if(pg>1) b+=`<button class="pb" onclick="gp(${pg-1})">‹</button>`;
-  for(let p=Math.max(1,pg-2);p<=Math.min(total,pg+2);p++)
+  // ปุ่ม < ย้อนกลับ
+  b+=`<button class="pb nav" onclick="gp(${pg-1})" ${pg<=1?'disabled':''}>&#8249;</button>`;
+  // หน้าตัวเลข
+  const start = Math.max(1, pg-2);
+  const end   = Math.min(total, pg+2);
+  if(start > 1) b+=`<button class="pb" onclick="gp(1)">1</button>${start>2?'<span style="color:var(--muted);padding:0 4px">…</span>':''}`;
+  for(let p=start;p<=end;p++)
     b+=`<button class="pb${p===pg?' on':''}" onclick="gp(${p})">${p}</button>`;
-  if(pg<total) b+=`<button class="pb" onclick="gp(${pg+1})">›</button>`;
+  if(end < total) b+=`${end<total-1?'<span style="color:var(--muted);padding:0 4px">…</span>':''}<button class="pb" onclick="gp(${total})">${total}</button>`;
+  // ปุ่ม > ไปหน้าถัดไป
+  b+=`<button class="pb nav" onclick="gp(${pg+1})" ${pg>=total?'disabled':''}>&#8250;</button>`;
   document.getElementById('pbs').innerHTML=b;
 }
 
@@ -546,15 +563,16 @@ function openModal(idx) {
       <h3>📊 Vital Signs (${vsArr.length} แถว)</h3>
       ${vsArr.length > 0 ? `
       <table class="vs-modal-table">
+        <colgroup><col><col><col><col><col><col></colgroup>
         <thead><tr><th>เวลา</th><th>BP (mmHg)</th><th>HR</th><th>RR</th><th>SpO₂%</th><th>DTX</th></tr></thead>
         <tbody>
-          ${vsArr.map(v=>`<tr>
-            <td style="color:#ffa502">${v.time||'—'}</td>
-            <td style="color:var(--cyan)">${v.bp||'—'}</td>
-            <td>${v.hr||'—'}</td>
-            <td>${v.rr||'—'}</td>
-            <td style="color:var(--green)">${v.spo2||'—'}</td>
-            <td>${v.dtx||'—'}</td>
+          ${vsArr.map((v,i)=>`<tr>
+            <td style="color:#ffa502;font-weight:600">${v.time||'—'}</td>
+            <td style="color:var(--cyan);font-weight:600">${v.bp||'—'}</td>
+            <td style="color:var(--text)">${v.hr||'—'}</td>
+            <td style="color:var(--text)">${v.rr||'—'}</td>
+            <td style="color:var(--green);font-weight:600">${v.spo2||'—'}</td>
+            <td style="color:var(--text)">${v.dtx||'—'}</td>
           </tr>`).join('')}
         </tbody>
       </table>` : '<div style="color:var(--muted);padding:8px">ไม่มีข้อมูล Vital Signs</div>'}
