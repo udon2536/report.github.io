@@ -209,7 +209,8 @@ async function loadStats() {
     function sp(line){const r=[];let c='',q=false;for(let i=0;i<line.length;i++){const ch=line[i];if(ch==='"'){if(q&&line[i+1]==='"'){c+='"';i++;}else q=!q;}else if(ch===','&&!q){r.push(c);c='';}else c+=ch;}r.push(c);return r;}
     const hdr=sp(lines[0]);
     const idcI=hdr.indexOf('IDC'), dateI=hdr.indexOf('Date');
-    const rows=lines.slice(1).map(l=>sp(l));
+    const minCols=Math.floor(hdr.length*0.5); // กรองแถวที่ column ไม่ครบ (เหมือน dashboard)
+    const rows=lines.slice(1).map(l=>sp(l)).filter(r=>r.length>=minCols);
     document.getElementById('statTotal').textContent=rows.length;
     document.getElementById('statRed').textContent=rows.filter(r=>(r[idcI]||'').trim()==='แดง').length;
     document.getElementById('statYellow').textContent=rows.filter(r=>(r[idcI]||'').trim()==='เหลือง').length;
